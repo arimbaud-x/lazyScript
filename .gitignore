@@ -1,2 +1,12 @@
 
 *.rar
+# ignore everything
+*
+# allow directories so negations can work
+!*/
+# allow lazy* files/dirs and their contents
+!lazy*
+!lazy*/**
+# allow README files
+!README*
+!readme*
