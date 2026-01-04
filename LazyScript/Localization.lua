@@ -710,7 +710,7 @@ Overview = "Overview"
 Actions = "Actions"
 Criteria = "Criteria"
 Buffs_Debuffs = "Buffs/Debuffs"
-
+Extras = "Extras"
 -- Immunity.xml
 --Cancel = "Cancel"
 --Help = "Help"

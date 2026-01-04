@@ -142,6 +142,8 @@ function lazyScript.OnLoad()
 	this:RegisterEvent("PLAYER_LOGIN")
 	
 	SlashCmdList["LAZYSCRIPT"] = lazyScript.SlashCommand
+
+	-- custom
 end
 
 function lazyScript.OnEvent()
@@ -549,6 +551,17 @@ function lazyScript.OnEvent()
 		
 		else
 		lazyScript.d(UNHANDLED_EVENT..event..": ")
+
+		--[[
+			load custom modules 
+			after everything else
+
+			naming schema is as follows:
+
+				dromedaryCase and
+				never pluralised
+		]]
+		lazyScript.loadFont()
 	end
 	
 end

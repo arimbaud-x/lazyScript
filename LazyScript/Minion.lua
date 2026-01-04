@@ -77,6 +77,13 @@ function lazyScript.minion.SetText(text)
 	end
 	LazyScriptMinionText:SetText(text)
 end
+
+--[[
+layt's separate 'active frame'
+used by action=msg command
+that flashes a (too) small frame
+for 2.5s
+with the passed message in it.]]
 local frameActive = 0
 function lazyScript.minion.OnActiveFrameUpdate()
 	frameActive = frameActive + arg1
@@ -90,10 +97,28 @@ function lazyScript.minion.SetTextActive(text)
 	if (not text) then
 		text = ""
 	end
-	LazyScriptActiveFrameText:SetText(text)
+	if LazyScriptActiveFrameArrow and LazyScriptActiveFrameArrow.Hide then
+        LazyScriptActiveFrameArrow:Hide()
+    end
+	if LazyScriptActiveFrameText then
+		local textLength = string.len(text) 	-- this is length in bytes xD
+		LazyScriptActiveFrame:SetWidth(30 + textLength * 7)
+		LazyScriptActiveFrameText:SetWidth(13 + textLength * 7)
+
+		LazyScriptActiveFrameText:SetText(text) 
+	end
+		--[[
+	custom change, making the width dynamic
+	before it was as wide as one single character
+	]]
+	
 end
 
 function lazyScript.minion.ShowActive()
 	if LazyScriptActiveFrame:IsVisible() then frameActive = 0 end
 	LazyScriptActiveFrame:Show()
+	
 end
+
+
+

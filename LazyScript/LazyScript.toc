@@ -9,6 +9,7 @@
 ## SavedVariables: lsConfGlobal
 ## SavedVariablesPerCharacter: lsConf
 
+
 LazyScript.lua
 Util.lua
 Localization.lua
@@ -35,3 +36,7 @@ Immunity.xml
 MinimapMenu.xml
 Minion.xml
 Tooltip.xml
+
+modules\fonts.lua
+modules\skin.lua
+modules\superwow.lua

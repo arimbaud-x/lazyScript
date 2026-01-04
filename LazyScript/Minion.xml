@@ -4,7 +4,7 @@ xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 	
 	<Frame name="LazyScriptMinionFrame" hidden="true" frameStrata="MEDIUM" toplevel="true" 
-	enableMouse="true" movable="true" parent="UIParent">
+	enableMouse="true" resizable="false" movable="true" parent="UIParent">
 		<Scripts>
 			<OnLoad>
 				lazyScript.metadata:updateRevisionFromKeyword("$Revision: 527 $")
@@ -36,7 +36,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<AbsDimension x="200" y="32"/>
 		</Size>
 		<Anchors>
-			<Anchor point="TOP">
+			<Anchor point="CENTER">
 				<Offset>
 					<AbsDimension x="0" y="-50"/>
 				</Offset>
@@ -63,9 +63,10 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						<AbsDimension x="190" y="12"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOP">
+					<!-- custom  -->
+						<Anchor point="CENTER">
 							<Offset>
-								<AbsDimension x="0" y="-9"/>
+								<AbsDimension x="0" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -73,9 +74,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 <Frame name="LazyScriptActiveFrame" hidden="true" frameStrata="MEDIUM" toplevel="true" 
-	enableMouse="true" movable="true" parent="UIParent">
+	enableMouse="true" resizable="true" movable="true" parent="UIParent">
 		<Scripts>
 			<OnLoad>
 				this:RegisterForDrag("LeftButton")
@@ -109,6 +110,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		
 		<Backdrop name="$parentBackdrop" bgFile="Interface\TutorialFrame\TutorialFrameBackground"
 		edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			
+			
+			
 			<EdgeSize>
 				<AbsValue val="16"/>
 			</EdgeSize>
@@ -149,4 +153,5 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			</Layer>
 		</Layers>
 	</Frame>
+	
 </Ui>

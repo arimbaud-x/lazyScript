@@ -2536,7 +2536,42 @@ function lazyScript.bitParsers.ifInCooldown(bit, actions, masks)
 	table.insert(masks, lazyScript.orWrapper(subMasks, negate))
 	return true
 end
+--[[
+custom: adding if OnCooldown for grammatic consistency as an alternative option
+]]
 
+function lazyScript.masks.OnCooldown(actionObj)
+	return function()
+		if (not actionObj) then return nil end
+		local slot = actionObj:GetSlot() and actionObj:GetSlot(true)
+		if (not slot) then return nil end
+		local start, duration = GetActionCooldown(slot)
+		if (not duration or duration == 0) then
+			return false
+		end
+		return (duration > 0)
+	end
+end
+
+lazyScript.masks.InCooldown = lazyScript.masks.OnCooldown
+
+function lazyScript.bitParsers.ifOnCooldown(bit, actions, masks)
+	if (not lazyScript.rebit(bit, "^if(Not)?OnCooldown=(.+)$")) then
+		return false
+	end
+	local negate = lazyScript.negate1()
+	local actionKey = lazyScript.match2
+	local actionObj = lazyScript.actions[actionKey] or lazyScript.otherActions[actionKey]
+	if (not actionObj) then return nil end
+	table.insert(masks, lazyScript.negWrapper(lazyScript.masks.OnCooldown(actionObj), negate))
+	return true
+end
+
+function lazyScript.bitParsers.ifInCooldown(bit, actions, masks)
+	return lazyScript.bitParsers.ifOnCooldown(bit, actions, masks)
+end
+
+-- end of custom 
 
 function lazyScript.masks.ActionCooldownTimeout(actionObj,gtLtEq,val)
 	return function(sayNothing)

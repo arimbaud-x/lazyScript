@@ -91,7 +91,7 @@ lazyScript.formHelp = {}
 lazyScript.formHelp.tabHelpText = {}
 
 function lazyScript.formHelp.OnLoad()
-	PanelTemplates_SetNumTabs(LazyScriptFormHelp, 4)
+	PanelTemplates_SetNumTabs(LazyScriptFormHelp, 5) -- changed from 4 -> 5
 	LazyScriptFormHelp.selectedTab = 1
 	PanelTemplates_UpdateTabs(LazyScriptFormHelp)
 end
@@ -116,6 +116,7 @@ function lazyScript.formHelp.SetupHelpText()
 	lazyScript.formHelp.SetupActions()
 	lazyScript.formHelp.SetupCriteria()
 	lazyScript.formHelp.SetupBuffsDebuffs()
+	lazyScript.formHelp.SetupExtras() -- new
 end
 
 function lazyScript.formHelp.ColorizeBrackets(text)
@@ -467,4 +468,293 @@ function lazyScript.formHelp.SetupBuffsDebuffs()
 	text = text.."<BR/></BODY></HTML>"
 	
 	lazyScript.formHelp.tabHelpText[Buffs_Debuffs] = text
+end
+
+--[[
+new tab
+for undocumented features
+]]
+
+function lazyScript.formHelp.SetupExtras()
+	local text = "<HTML><BODY>"
+	text = text.."<H1>Extra documentation</H1><BR/>"
+	text = text.."<H2>Valid UnitIDs</H2><BR/>"
+	text = text.."<P>The following unit IDs can be used in actions that require a target unit (e.g., action{@&lt;UnitId&gt;}):</P>"
+	local displayUnitIds = {
+		"player",
+		"pet",
+		"party1, party2, party3, party4",
+		"partypet1, partypet2, partypet3, partypet4",
+		"raid[1-40]",
+		"raidpet[1-40]",
+		"target",
+		"targettarget",
+		"mouseover"
+	}
+	local unitIdList = {}
+	for _, unitId in ipairs(displayUnitIds) do
+		table.insert(unitIdList, unitId)
+	end
+	text = text.."<P>"..table.concat(unitIdList, "</P><P>").."</P>"
+	text = text.."<BR/><H1>New Features:</H1><BR/>"
+	text = text.."<P> - /ls command for use in macros, e.g., '/ls do ss' </P>"
+    text = text.."<P> - (smart) tag; if you are using LazySpell, this tag will replace the rank of spell for Lazyspell calculation, e.g., '/ls do heal(smart)@mouseOver'</P>"
+    text = text.."<P> - if(Not)GotTalent=Talent1,Talent2 critera</P>"
+    text = text.."<P> - Support for LUNA, pfUI, NotGrid unitframes in mouseover actions</P>"
+	text = text.."<P> - frostNova and frostbite to known debuffs</P>"
+	text = text.."<P> - if(Not)PartyHaveClass criteria; e.g., 'sayInParty=No Totem!-ifPartyHaveClass=shaman'</P>"
+	text = text.."<P> - active=message action; this action will indicate what script is active, e.g., 'active=solo-every2s'. This message will pop-up in a small window for about 1 second.</P>"
+	text = text.."<P> - ifOnCooldown; added as an alternative for ifInCooldown for grammatic consistency</P>"
+	--[[
+	sayInParty=NoTotem-ifPartyHaveClass=shaman
+	- Added ifShieldEquipped criteria
+	- Added action active=msg ucan use it to indicate what script is active now
+	example active-solo-every2s
+	- Added `Zeal` buff\debuff
+	]]
+	text = text.."<BR/><H1>PlaySound Action</H1><BR/>"
+	text = text.."<P>The playSound action plays a sound file. Syntax:</P>"
+	text = text.."<P>|cff40ff40playSound|r={soundName}</P><BR/>"
+	text = text.."<P>Valid sound names include |cffff6060 (note: some have deliberate typos that work in-game) |r :</P>"
+	local VALID_SOUND_NAMES = {
+	"ACTIONBARBUTTONDOWN",
+	"AUCTIONWINDOWCLOSE",
+	"AUCTIONWINDOWOPEN",
+	"BAGMENUBUTTONPRESS",
+	"Deathbind Sound",
+	"DwarfExploration",
+	"Fishing Reel in",
+	"FriendJoinGame",
+	"GAMEABILITYACTIVATE",
+	"GAMEABILITYBUTTONMOUSEDOWN",
+	"GAMEERRORINVALIDTARGET",
+	"GAMEERROROUTOFMANA",
+	"GAMEERROROUTOFRANGE",
+	"GAMEERRORUNABLETOEQUIP",
+	"GAMEDIALOGCLOSE",
+	"GAMEDIALOGOPEN",
+	"GAMEGENERICBUTTONPRESS",
+	"GAMEHIGHLIGHTFRIENDLYUNIT",
+	"GAMEHIGHLIGHTHOSTILEUNIT",
+	"GAMEHIGHLIGHTNEUTRALUNIT",
+	"GAMEINITIALATTACK",
+	"GAMENEWWINDOWTAB",
+	"GAMESCREENLARGEBUTTONMOUSEDOWN",
+	"GAMESCREENLARGEBUTTONMOUSEOVER",
+	"GAMESCREENLARGEBUTTONMOUSEUP",
+	"GAMESCREENMEDIUMBUTTONMOUSEDOWN",
+	"GAMESCREENMEDIUMBUTTONMOUSEOVER",
+	"GAMESCREENMEDIUMBUTTONMOUSEUP",
+	"GAMESCREENSMALLBUTTONMOUSEDOWN",
+	"GAMESCREENSMALLBUTTONMOUSEOVER",
+	"GAMESCREENSMALLBUTTONMOUSEUP",
+	"GAMESPELLACTIVATE",
+	"GAMESPELLBUTTONMOUSEDOWN",
+	"GAMETARGETFRIENDLYUNIT",
+	"GAMETARGETHOSTILEUNIT",
+	"GAMETARGETNEUTRALUNIT",
+	"GAMEWINDOWCLOSE",
+	"GAMEWINDOWOPEN",
+	"GLUECHARCUSTOMIZATIONMOUSEDOWN",
+	"GLUECHARCUSTOMIZATIONMOUSEOVER",
+	"GLUECHARCUSTOMIZATIONMOUSEUP",
+	"GLUECHECKBOXMOUSEDOWN",
+	"GLUECHECKBOXMOUSEOVER",
+	"GLUECHECKBOXMOUSEUP",
+	"GLUECREATECHARACTERBUTTON",
+	"GLUEENTERWORLDBUTTON",
+	"GLUEGENERICBUTTONPRESS",
+	"GLUESCREENEDITBOXKEYCLICK",
+	"GLUESCREENLARGEBUTTONMOUSEDOWN",
+	"GLUESCREENLARGEBUTTONMOUSEOVER",
+	"GLUESCREENLARGEBUTTONMOUSEUP",
+	"GLUESCREENMEDIUMBUTTONMOUSEDOWN",
+	"GLUESCREENMEDIUMBUTTONMOUSEOVER",
+	"GLUESCREENMEDIUMBUTTONMOUSEUP",
+	"GLUESCREENSMALLBUTTONMOUSEDOWN",
+	"GLUESCREENSMALLBUTTONMOUSEOVER",
+	"GLUESCREENSMALLBUTTONMOUSEUP",
+	"GLUESCROLLBUTTONMOUSEDOWN",
+	"GLUESCROLLBUTTONMOUSEOVER",
+	"GLUESCROLLBUTTONMOUSEUP",
+	"GLUESOCIALCLOSE",
+	"GLUESOCIALOPEN",
+	"GnomeExploration",
+	"gsCharacterCreationCancel",
+	"gsCharacterCreationClass",
+	"gsCharacterCreationCreateChar",
+	"gsCharacterCreationGender",
+	"gsCharacterCreationLook",
+	"gsCharacterCreationRace",
+	"gsCharacterSelection",
+	"gsCharacterSelectionAcctOptions",
+	"gsCharacterSelectionCreateNew",
+	"gsCharacterSelectionDelCharacter",
+	"gsCharacterSelectionEnterWorld",
+	"gsCharacterSelectionExit",
+	"gsLogin",
+	"gsLoginChangeRealm",
+	"gsLoginChangeRealmCancel",
+	"gsLoginChangeRealmOK",
+	"gsLoginChangeRealmSelect",
+	"gsLoginExit",
+	"gsLoginNewAccount",
+	"gsTitleCredits",
+	"gsTitleEnterWorld",
+	"gsTitleIntroMovie",
+	"gsTitleOK",
+	"gsTitleOption16bit",
+	"gsTitleOption32bit",
+	"gsTitleOptionDirect3D",
+	"gsTitleOptionExit",
+	"gsTitleOptionFullScreenMode",
+	"gsTitleOptionOK",
+	"gsTitleOptionOpenGL",
+	"gsTitleOptionScreenResolution",
+	"gsTitleOptions",
+	"gsTitleQuit",
+	"HumanExploration",
+	"igAbilityClose",
+	"igAbilityIconDrop",
+	"igAbilityIconPickup",
+	"igAbilityOpen",
+	"igAbiliityPageTurn",
+	"igBackPackClose",
+	"igBackPackCoinCancel",
+	"igBackPackCoinOK",
+	"igBackPackCoinSelect",
+	"igBackPackOpen",
+	"igBonusBarOpen",
+	"igCharacterInfoClose",
+	"igCharacterInfoOpen",
+	"igCharacterInfoScrollDown",
+	"igCharacterInfoScrollUp",
+	"igCharacterInfoTab",
+	"igCharacterNPCDeselect",
+	"igCharacterNPCSelect",
+	"igCharacterSelect",
+	"igCharacterDeselect",
+	"igChatBottom",
+	"igChatEmoteButton",
+	"igChatScrollDown",
+	"igChatScrollUp",
+	"igCreatureAggroDeselect",
+	"igCreatureAggroSelect",
+	"igCreatureNeutralDeselect",
+	"igCreatureNeutralSelect",
+	"igCurrentActiveSpell",
+	"igInventoryClose",
+	"igInventoryOepn",
+	"igInventoryRotateCharacter",
+	"igMainMenuClose",
+	"igMainMenuContinue",
+	"igMainMenuLogout",
+	"igMainMenuOpen",
+	"igMainMenuOption",
+	"igMainMenuOptionCheckBoxOff",
+	"igMainMenuOptionCheckBoxOn",
+	"igMainMenuOptionFaerTab",
+	"igMainMenuQuit",
+	"igMiniMapClose",
+	"igMiniMapOpen",
+	"igMiniMapZoomIn",
+	"igMiniMapZoomOut",
+	"igPlayerInvite",
+	"igPlayerInviteAccept",
+	"igPlayerInviteDecline",
+	"igPVPUpdate",
+	"igQuestCancel",
+	"igQuestFailed",
+	"igQuestListClose",
+	"igQuestListComplete",
+	"igQuestListOpen",
+	"igQuestListSelect",
+	"igQuestLogAbandonQuest",
+	"igQuestLogClose",
+	"igQuestLogOpen",
+	"igSocialClose",
+	"igSocialOepn",
+	"igSpellBookClose",
+	"igSpellBookOpen",
+	"igSpellBookSpellIconDrop",
+	"igSpellBookSpellIconPickup",
+	"igSpellBokPageTur",
+	"INTERFACESOUND_BACKPACKCLOSE",
+	"INTERFACESOUND_BACKPACKOPEN",
+	"INTERFACESOUND_CHARWINDOWCLOSE",
+	"INTERFACESOUND_CHARWINDOWOPEN",
+	"INTERFACESOUND_CHARWINDOWTAB",
+	"INTERFACESOUND_CURSORGRABOBJECT",
+	"INTERFACESOUND_CURSORDROPOBJECT",
+	"INTERFACESOUND_GAMEMENUCLOSE",
+	"INTERFACESOUND_GAMEMENUOPEN",
+	"INTERFACESOUND_GAMESCROLLBUTTON",
+	"INTERFACESOUND_LOSTTARGETUNIT",
+	"INTERFACESOUND_MONEYFRAMECLOSE",
+	"INTERFACESOUND_MONEYFRAMEOPEN",
+	"ITEMARMORSOUND",
+	"ITEMGENERICSOUND",
+	"ITEMWEAPONSOUND",
+	"LEVELUP",
+	"LEVELUPSOUND",
+	"LOOTWINDOWCLOSE",
+	"LOOTWINDOWCOINSOUND",
+	"LOOTWINDOWOPEN",
+	"LOOTWINDOWOPENEMPTY",
+	"MAINBUTTONBARMENU",
+	"MapPing",
+	"MINIMAPCLOSE",
+	"MINIMAPOPEN",
+	"MINIMAPZOOMIN",
+	"MINIMAPZOOMOUT",
+	"MONEYFRAMECLOSE",
+	"MONEYFRAMEOPEN",
+	"NightElfExploration",
+	"OrcExploration",
+	"PAPERDOLLCLOSE",
+	"PAPERDOLLOPEN",
+	"PVPENTERQUEUE",
+	"PVPTHROUGHQUEUE",
+	"QUESTADDED",
+	"QUESTCOMPLETED",
+	"QUESTLOGCLOSE",
+	"QUESTLOGOPEN",
+	"RaidWarning",
+	"ReadyCheck",
+	"SHEATHINGMETALWEAPONUNSHEATHE",
+	"SHEATHINGMETALWEAPONSHEATHE",
+	"SHEATHINGSHIELDUNSHEATHE",
+	"SHEATHINGSHIELDSHEATHE",
+	"SHEATHINGWOODWEAPONUNSHEATHE",
+	"SHEATHINGWOODWEAPONSHEATHE",
+	"SPELLBOOKCHANGEPAGE",
+	"SPELLBOOKCLOSE",
+	"SPELLBOOKOPEN",
+	"TalentScreenClose",
+	"TalentScreenOpen",
+	"TaxiNodeDiscovered",
+	"TaurenExploration",
+	"TellMessage",
+	"TrollExploration",
+	"UChatScrollButton",
+	"UndeadExploration",
+	"UnwrapGift",
+	"WriteQuest"
+}
+
+	local soundList = {}
+	for _, soundName in ipairs(VALID_SOUND_NAMES) do
+		local displayName = soundName
+		-- Highlight known typos with different color
+		if soundName == "igSocialOepn" or soundName == "igInventoryOepn" then
+			displayName = "|cffff6060" .. soundName .. "|r"  -- Red color for typos
+		else
+			displayName = "|cffffffff" .. soundName .. "|r"
+		end
+		table.insert(soundList, displayName)
+	end
+	text = text.."<P>"..table.concat(soundList, "</P><P>").."</P>"
+	text = text.."<BR/></BODY></HTML>"
+
+	lazyScript.formHelp.tabHelpText[Extras] = text
 end

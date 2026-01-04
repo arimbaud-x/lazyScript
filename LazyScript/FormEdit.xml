@@ -241,7 +241,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						<AbsValue val="4"/>
 					</TileSize>
 					<BackgroundInsets>
-						<AbsInset left="0" right="0" top="0" bottom="0"/>
+						<AbsInset left="-5" right="0" top="0" bottom="0"/>
 					</BackgroundInsets>
 				</Backdrop>
 				
@@ -548,13 +548,14 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						<FontString inherits="GameFontNormal">
 							<Color r="1" g="1" b="0.6"/>
 						</FontString>
-						<FontStringHeader1 inherits="GameFontNormal">
-							<Color r="1" g="1" b="1"/>
-						</FontStringHeader1>
-						<FontStringHeader2 inherits="GameFontNormal">
+						<FontStringHeader1>
+							<Font file="Interface\AddOns\LazyScript\fonts\PT-Sans-Narrow-Bold.ttf" height="16" flags="OUTLINE"/>
+							<Color r="1" g="0" b="1"/>
+						</FontStringHeader1> 
+						<FontStringHeader2>
 							<Color r="1" g="0.5" b="0.25"/>
 						</FontStringHeader2>
-						<FontStringHeader3 inherits="GameFontNormal">
+						<FontStringHeader3>
 							<Color r="1" g="0.5" b="0.3"/>
 						</FontStringHeader3>
 					</SimpleHTML>
@@ -565,7 +566,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="60" y="-10"/>
+							<AbsDimension x="60" y="-9"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -594,6 +595,16 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 			<Button name="LazyScriptFormHelpTab4" inherits="LazyScriptFormHelpTabTemplate" id="4" text="Buffs_Debuffs">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="LazyScriptFormHelpTab3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			<Button name="LazyScriptFormHelpTab5" inherits="LazyScriptFormHelpTabTemplate" id="5" text="Extras">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="LazyScriptFormHelpTab4" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="-16" y="0"/>
 						</Offset>

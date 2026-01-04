@@ -129,12 +129,16 @@ function lazyWarriorLoad.LoadParseWarrior()
 
 	function lazyWarrior.masks.IsBloodthirstKillShot(goalPct, bloodFuryTrue)
 		return function(sayNothing)
-			local targetMaxHP = MobHealth_GetTargetMaxHP()
+			--[[ custom check if mobhealth is installed ]]
+			if MobHealth_GetTargetMaxHP then 
+				local targetMaxHP = MobHealth_GetTargetMaxHP()
+			end
+
 			if not targetMaxHP then
 				return false
 			end
 			
-			local targethp = 0
+			local targetHp = 0
 			targetHp = MobHealth_GetTargetMaxHP() * (goalPct / 100)
 			local currentHp = lazyWarrior.masks.GetUnitHealth("target", false, false, sayNothing)
 			

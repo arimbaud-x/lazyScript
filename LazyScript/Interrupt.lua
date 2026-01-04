@@ -34,6 +34,37 @@ function lazyScript.interrupt.OnChatMsgSpell(arg1)
 	end
 end
 
+-- custom superwow integration; see modules/superwow.lua
+function lazyScript.interrupt.OnSuperWoWSpell(spell, event)
+	if not spell or type(spell) ~= "string" then return end
+	if event == "START" then
+		local tName = UnitName("target")
+		lazyScript.d(DETECTED_YOUR_TARGET..spell..SUGGEST_INTERRUPT)
+		if lazyScript.perPlayerConf and lazyScript.perPlayerConf.showTargetCasts and tName then
+            lazyScript.p("SuperWoW: "..tName..IS_CASTING..spell..".")
+        end
+		lazyScript.interrupt.targetCasting = spell
+		lazyScript.interrupt.castingDetectedAt = GetTime()
+		return
+	end
+
+	-- terminate interrupt attempt when
+	if event == "CAST" or event == "CHANNEL" or event == "FAIL" then
+		if event == "FAIL" then
+			local tName = UnitName("target")
+			-- this is not suitable. fail event triggers if target dies while casting
+			lazyScript.interrupt.lastSpellInterrupted = spell
+			if lazyScript.perPlayerConf and lazyScript.perPlayerConf.showTargetCasts and tName then
+            	lazyScript.p("SuperWoW: "..tName.." has failed to cast "..spell..".")
+        	end
+		end
+		
+		lazyScript.interrupt.targetCasting = nil
+        lazyScript.interrupt.castingDetectedAt = 0
+		return
+	end
+end
+
 
 -- Interrupt Criteria Edit Box
 
