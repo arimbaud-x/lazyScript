@@ -29,6 +29,7 @@ if SUPERWOW_VERSION and lazyScript.GetUnitIdFromFrame() then
     end
 end
 
+-- cast monitor obj for superwow
 local castMonitor = CreateFrame("Frame", nil)
 castMonitor:SetPoint("CENTER", UIParent, "CENTER", 0, 70)
 castMonitor:SetWidth(64)
@@ -67,5 +68,13 @@ castMonitor:SetScript("OnEvent", function()
     end
     -- goto interrupt func
     lazyScript.interrupt.OnSuperWoWSpell(spell, event)
+
+    -- masks handle interrupt skipping and so dont need to be implemented here
 end)
+
+-- todo: superwow spells
+
+--  cast after autoshoot
+
+
 

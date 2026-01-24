@@ -496,7 +496,7 @@ function lazyScript.formHelp.SetupExtras()
 		table.insert(unitIdList, unitId)
 	end
 	text = text.."<P>"..table.concat(unitIdList, "</P><P>").."</P>"
-	text = text.."<BR/><H1>New Features:</H1><BR/>"
+	text = text.."<H1>New Features:</H1><BR/>"
 	text = text.."<P> - /ls command for use in macros, e.g., '/ls do ss' </P>"
     text = text.."<P> - (smart) tag; if you are using LazySpell, this tag will replace the rank of spell for Lazyspell calculation, e.g., '/ls do heal(smart)@mouseOver'</P>"
     text = text.."<P> - if(Not)GotTalent=Talent1,Talent2 critera</P>"
@@ -504,7 +504,8 @@ function lazyScript.formHelp.SetupExtras()
 	text = text.."<P> - frostNova and frostbite to known debuffs</P>"
 	text = text.."<P> - if(Not)PartyHaveClass criteria; e.g., 'sayInParty=No Totem!-ifPartyHaveClass=shaman'</P>"
 	text = text.."<P> - active=message action; this action will indicate what script is active, e.g., 'active=solo-every2s'. This message will pop-up in a small window for about 1 second.</P>"
-	text = text.."<P> - ifOnCooldown; added as an alternative for ifInCooldown for grammatic consistency</P>"
+	text = text.."<P> - if(Not)OnCooldown; added as an alternative for ifInCooldown for grammatic consistency</P>"
+	text = text.."<P> - if(Not)AutoShotSafe; this mask will try not to clip autoshots [Hunter only] [Quiver Required]. Mileage may vary according to lag.</P>"
 	--[[
 	sayInParty=NoTotem-ifPartyHaveClass=shaman
 	- Added ifShieldEquipped criteria

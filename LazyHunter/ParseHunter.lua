@@ -364,6 +364,26 @@ function lazyHunterLoad.LoadParseHunter()
 	-- "return function() ... end" inside the mask function, everything else will be evaluated at
 	-- the time that the mask is parsed.
 	
+	-- new hunter mask for not clipping autoshot 
+	-- copied from IsSlamTime
+	
+	function lazyHunter.masks.IsAutoShotSafe()
+		if Quiver then
+			local _, secondsRemaining =  Quiver.GetSecondsRemainingShoot()
+			return secondsRemaining < 0.01
+		else
+			return true
+		end
+	end
+
+	function lazyHunter.bitParsers.IsAutoShotSafe(bit, actions, masks)
+		if (not lazyHunter.rebit(bit, "^if(Not)?AutoShotSafe$")) then
+			return false
+		end
+		local negate = lazyHunter.negate1()
+		table.insert(masks, lazyHunter.negWrapper(lazyHunter.masks.IsAutoShotSafe, negate))
+		return true 
+	end
 	
 	
 	-- Hunter utility functions

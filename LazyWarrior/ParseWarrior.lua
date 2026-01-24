@@ -112,7 +112,7 @@ function lazyWarriorLoad.LoadParseWarrior()
 	function lazyWarrior.masks.IsSlamTime()
 		
 		if SP_ST_Updater then
-			return  st_timer > UnitAttackSpeed("player") * 0.75
+			return st_timer > UnitAttackSpeed("player") * 0.75
 		else
 			return true
 		end
