@@ -110,11 +110,12 @@ function lazyWarriorLoad.LoadParseWarrior()
 	-- the time that the mask is parsed.
 	
 	function lazyWarrior.masks.IsSlamTime()
-		
-		if SP_ST_Updater then
-			return st_timer > UnitAttackSpeed("player") * 0.75
-		else
-			return true
+		return function(sayNothing)
+			if SP_ST_Updater then
+				return st_timer > UnitAttackSpeed("player") * 0.75
+			else
+				return true
+			end
 		end
 	end
 	
@@ -123,7 +124,7 @@ function lazyWarriorLoad.LoadParseWarrior()
 			return false
 		end
 		local negate = lazyWarrior.negate1()
-		table.insert(masks, lazyWarrior.negWrapper(lazyWarrior.masks.IsSlamTime, negate))
+		table.insert(masks, lazyWarrior.negWrapper(lazyWarrior.masks.IsSlamTime(), negate))
 		return true
 	end
 

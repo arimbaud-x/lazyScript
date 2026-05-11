@@ -68,11 +68,26 @@ end
 function lazyScript.Action:CompareTexture(texture)
 	if texture == nil or self.texture == nil then
 		return false
-	elseif type(self.texture) == "string" then
-		return (self.texture == texture)
+	end
+	local function stripPrefix(path)
+		local _, _, capture = string.find(path, "^%a+\\%a+\\(.+)$")
+    	return capture
+	end
+
+	local incomingStripped = stripPrefix(texture)
+
+	if not incomingStripped then
+    	lazyScript.d("CompareTexture: unexpected texture format: " .. tostring(texture))
+    	return texture == self.texture
+	end
+
+	if type(self.texture) == "string" then
+		local storedStripped = stripPrefix(self.texture)
+		return incomingStripped == storedStripped
 	elseif type(self.texture) == "table" then
 		for _, value in ipairs(self.texture) do
-			if value == texture then
+			local storedStripped = stripPrefix(value)
+			if incomingStripped == storedStripped then
 				return true
 			end
 		end
@@ -83,26 +98,39 @@ end
 function lazyScript.Action:GetSlot(sayNothing)
 	if (self.slot) then
 		if (not self.slotCheckedSinceUpdate) then
+			local validated = false
 			if (self.texture) then
 				if (not GetActionText(self.slot)) then -- ignore any Player macros :-)
 					local thisTexture = GetActionTexture(self.slot)
+					
 					if (thisTexture and self:CompareTexture(thisTexture)) then
 						if (self.problemTexture) then
 							if (lazyScript.GetActionNameFromTooltip(self.slot) == self.name) then
-								self.slotCheckedSinceUpdate = true
-								return self.slot
+								validated = true
+								-- self.slotCheckedSinceUpdate = true
+								--return self.slot
 							end
 						else
-							self.slotCheckedSinceUpdate = true
-							return self.slot
+							validated = true
+							--self.slotCheckedSinceUpdate = true
+							--return self.slot
 						end
 					end
 				end
 			else
 				if (lazyScript.GetActionNameFromTooltip(self.slot) == self.name) then
-					self.slotCheckedSinceUpdate = true
-					return self.slot
+					validated = true
+					--self.slotCheckedSinceUpdate = true
+					--return self.slot
 				end
+			end
+
+			if (validated) then 
+				self.slotCheckedSinceUpdate = true 
+				return self.slot
+			else
+				self.slot = nil
+				self.slotCheckedSinceUpdate = false
 			end
 		else
 			return self.slot
@@ -110,9 +138,9 @@ function lazyScript.Action:GetSlot(sayNothing)
 	end
 
 	-- If we get here then we don't have a slot or it has changed
-	self.slot = nil
+	-- self.slot = nil
 
-	if (not self.slot) then
+	-- if (not self.slot) then
 		for slot = 1, 120 do
 			local thisTexture = GetActionTexture(slot)
 			if (thisTexture) then
@@ -126,6 +154,7 @@ function lazyScript.Action:GetSlot(sayNothing)
 				--
 				if (self.texture) then
 					if (not GetActionText(slot)) then -- ignore any Player macros :-)
+						
 						if (thisTexture and self:CompareTexture(thisTexture)) then
 							if (self.problemTexture) then
 								if (lazyScript.GetActionNameFromTooltip(slot) == self.name) then
@@ -149,7 +178,7 @@ function lazyScript.Action:GetSlot(sayNothing)
 				end
 			end
 		end
-	end
+	-- end
 
 	if (not self.slot) then
 		if (not sayNothing) then
@@ -158,7 +187,8 @@ function lazyScript.Action:GetSlot(sayNothing)
 		return nil
 	end
 
-	return self.slot
+	self.slotCheckedSinceUpdate = true
+    return self.slot
 end
 
 function lazyScript.Action:FindSpellRanks(sayNothing)
@@ -173,29 +203,37 @@ function lazyScript.Action:FindSpellRanks(sayNothing)
 	end
 
 	local spellIndexStart
+	local nilStreak = 0
+	local MAX_NIL_STREAK = 10
 	for spellIndex = 1, 1000 do
 		local texture = GetSpellTexture(spellIndex, "spell")
 		if (not texture) then
-			if not sayNothing then
-				lazyScript.d(SPELLSEARCH_FOUND_NIL_TEXTURE .. spellIndex .. ".")
+			nilStreak = nilStreak + 1
+			if nilStreak >= MAX_NIL_STREAK then
+				if not sayNothing then
+					lazyScript.d(SPELLSEARCH_FOUND_NIL_TEXTURE .. spellIndex .. ".")
+				end
+				return nil
 			end
-			return nil
-		end
-		if (self:CompareTexture(texture)) then
-			if self.problemTexture then
-				if GetSpellName(spellIndex, "spell") == self.name then
+		else
+			nilStreak = 0
+			lazyScript.d(spellIndex .. ": comparing: [" .. tostring(texture) .. "] vs [" .. tostring(self.texture) .. "]")
+			if (self:CompareTexture(texture)) then
+				if self.problemTexture then
+					if GetSpellName(spellIndex, "spell") == self.name then
+						if not sayNothing then
+							lazyScript.d(SPELLSEARCH_FOUND .. self.code .. AT_INDEX .. spellIndex .. ".")
+						end
+						spellIndexStart = spellIndex
+						break
+					end
+				else
 					if not sayNothing then
 						lazyScript.d(SPELLSEARCH_FOUND .. self.code .. AT_INDEX .. spellIndex .. ".")
 					end
 					spellIndexStart = spellIndex
 					break
 				end
-			else
-				if not sayNothing then
-					lazyScript.d(SPELLSEARCH_FOUND .. self.code .. AT_INDEX .. spellIndex .. ".")
-				end
-				spellIndexStart = spellIndex
-				break
 			end
 		end
 	end

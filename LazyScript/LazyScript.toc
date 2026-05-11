@@ -40,3 +40,5 @@ Tooltip.xml
 modules\fonts.lua
 modules\skin.lua
 modules\superwow.lua
+modules\localisation.lua
+modules\help.lua

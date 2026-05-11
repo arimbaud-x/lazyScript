@@ -1753,6 +1753,19 @@ end
 -- "return function() ... end" inside the mask function, everything else will be evaluated at
 -- the time that the mask is parsed.
 
+function lazyScript.masks.IsSwingSafe()
+	return function(sayNothing)
+		if not SP_ST_Updater then return true end
+		return st_timer > UnitAttackSpeed("player") * 0.75
+	end
+end
+
+function lazyScript.bitParsers.IsSwingSafe(bit, actions, masks)
+	if (not lazyScript.rebit(bit, "^if(Not)?SwingSafe$")) then return false end
+	local negate = lazyScript.negate1()
+	table.insert(masks, lazyScript.negWrapper(lazyScript.masks.IsSwingSafe(), negate))
+	return true
+end
 
 function lazyScript.masks.UnitAlive(unitId)
 	return function(sayNothing)
@@ -3226,7 +3239,6 @@ function lazyScript.negate1()
 	return lazyScript.match1 == lazyScript.relax("Not")
 end
 
-
 function lazyScript.spellSearch(actionObj)
 	if (not actionObj) then
 		return false
@@ -3236,12 +3248,13 @@ function lazyScript.spellSearch(actionObj)
 		if (not texture) then
 			lazyScript.d(SPELLSEARCH_FOUND_NIL_TEXTURE..spellIndex..".")
 			return false
-			elseif (texture == actionObj.texture) then
+		end
+		if (texture == actionObj.texture) then
 			lazyScript.d(SPELLSEARCH_FOUND..actionObj.code..AT_INDEX..spellIndex..".")
 			return spellIndex
 		end
 	end
-	lazyScript.d(SPELLDEARCH_FOUND_MORE_THAN..spellIndex..SPELLS)
+	lazyScript.d(SPELLDEARCH_FOUND_MORE_THAN..spellIndex..SPELLS) -- sic 
 	return false
 end
 

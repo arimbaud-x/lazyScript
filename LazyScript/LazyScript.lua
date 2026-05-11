@@ -58,7 +58,8 @@ SLASH_LAZYSCRIPT2 = "/ls"
 BINDING_HEADER_LAZYSCRIPT = lazyScript.metadata.name
 
 
-LS_TEXTURE_PREFIX = "Interface\\Icons\\"
+LS_TEXTURE_PREFIX = "Interface\\Addons\\"
+
 
 lazyScript.addOnIsActive = false
 lazyScript.isInCombat = false
@@ -197,22 +198,22 @@ function lazyScript.OnEvent()
 		
 		elseif (event == "PLAYER_LOGIN") then
 		
-		this:RegisterEvent("PLAYER_ENTERING_WORLD")
-		this:RegisterEvent("PLAYER_ENTER_COMBAT")
-		this:RegisterEvent("PLAYER_LEAVE_COMBAT")
-		this:RegisterEvent("PLAYER_TARGET_CHANGED")
-		this:RegisterEvent("PLAYER_REGEN_DISABLED")
-		this:RegisterEvent("PLAYER_REGEN_ENABLED")
-		this:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
-		this:RegisterEvent("SPELLS_CHANGED")
-		this:RegisterEvent("UI_ERROR_MESSAGE")
-		
-		-- Determine if inventory position of items need to be checked again
-		this:RegisterEvent("BAG_UPDATE")
-		
-		-- Deathstimator
-		lazyScript.targetHealthHistory = lazyScript.deathstimator.HealthHistory:New()
-		this:RegisterEvent("UNIT_HEALTH")
+			this:RegisterEvent("PLAYER_ENTERING_WORLD")
+			this:RegisterEvent("PLAYER_ENTER_COMBAT")
+			this:RegisterEvent("PLAYER_LEAVE_COMBAT")
+			this:RegisterEvent("PLAYER_TARGET_CHANGED")
+			this:RegisterEvent("PLAYER_REGEN_DISABLED")
+			this:RegisterEvent("PLAYER_REGEN_ENABLED")
+			this:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
+			this:RegisterEvent("SPELLS_CHANGED")
+			this:RegisterEvent("UI_ERROR_MESSAGE")
+			
+			-- Determine if inventory position of items need to be checked again
+			this:RegisterEvent("BAG_UPDATE")
+			
+			-- Deathstimator
+			lazyScript.targetHealthHistory = lazyScript.deathstimator.HealthHistory:New()
+			this:RegisterEvent("UNIT_HEALTH")
 		
 		if (lazyScript.perPlayerConf["useImmunities"]) then
 			if lazyScript.ImmunityLocalized() then
@@ -233,7 +234,7 @@ function lazyScript.OnEvent()
 			this:RegisterEvent("CHAT_MSG_SPELL_HOSTILEPLAYER_DAMAGE")
 			this:RegisterEvent("CHAT_MSG_COMBAT_HOSTILEPLAYER_HITS")
 			else
-			lazyScript.p(GANKED_ATTAKERS_NOT_SUPPORT)
+			lazyScript.p(GANKED_ATTAKERS_NOT_SUPPORT) -- sic
 		end
 		
 		-- Attacker tracking
@@ -287,20 +288,26 @@ function lazyScript.OnEvent()
 			lazyScript.p(DOD_PAR_BLOCK_RES_NOT_SUPPORT)
 		end
 		
-		local rangeAction = lazyScript.getRangeCheckAction()
-		if lazyScript.spellSearch(rangeAction) then
+
+		if lazyScript.getRangeCheckAction then
+			local rangeAction = lazyScript.getRangeCheckAction() -- parseGeneral.lua
+			-- if lazyScript.spellSearch(rangeAction) then 
 			lazyScript.rangeCheckAction = rangeAction
+			-- end
 		end
-		
+
 		-- Parse interrupt exception criteria and cache the parsed form
 		lazyScript.masks.parsingInterruptExceptionCriteria = true
 		lazyScript.parsedInterruptExceptionCriteriaCache = lazyScript.ParseForm("interruptExceptionCriteria", lsConf.interruptExceptionCriteria)
 		lazyScript.masks.parsingInterruptExceptionCriteria = false
 		
 		-- Parse all forms to insert them into the cache
+		
 		for formName in pairs(lazyScript.perPlayerConf.forms) do
 			lazyScript.FindParsedForm(formName, false)
 		end
+		 -- this causes minion to break so we have to move minion shit too
+			
 		
 		-- Show the minion
 		if (lazyScript.perPlayerConf.minionIsVisible) then
@@ -308,13 +315,13 @@ function lazyScript.OnEvent()
 		end
 		
 		if (lazyScript.perPlayerConf.showActionAlways == true and dummy ~= nil) then
-			lazyScript.minion.OnUpdate()
+				lazyScript.minion.OnUpdate()
 			elseif (dummy ~= nil) then
-			lazyScript.minion.SetText(lazyScript.perPlayerConf.defaultForm)
+				lazyScript.minion.SetText(lazyScript.perPlayerConf.defaultForm)
 			else
-			lazyScript.minion.SetText(WELCOME..lazyScript.metadata.name)
-		end
-		
+				lazyScript.minion.SetText(WELCOME..lazyScript.metadata.name)
+			end
+	
 		-- Show the Deathstimator!
 		lazyScript.deathstimator.minion.SetText(DEATHSTIMATOR)
 		if (lazyScript.perPlayerConf.deathMinionIsVisible) then
@@ -324,10 +331,17 @@ function lazyScript.OnEvent()
 		-- Everything registered and ready to go. Say Hello!
 		lazyScript.chat(lazyScript.metadata:getNameVersionRevisionString()..LOADED)
 		
+
+		
+
+
+
+
 		elseif (event == "PLAYER_ENTERING_WORLD") then
-		-- Player has entered world, reset combat flag just in case we didn't
-		-- or won't get the REGEN_ENABLED event.
-		lazyScript.OnPlayerRegenEnabled()
+			-- Player has entered world, reset combat flag just in case we didn't
+			-- or won't get the REGEN_ENABLED event.
+			lazyScript.OnPlayerRegenEnabled()
+			
 		
 		-- Now for everything else that is used by LazyScript
 		elseif (event == "CHAT_MSG_SYSTEM") then
@@ -539,13 +553,7 @@ function lazyScript.OnEvent()
 		end
 		
 		elseif (event == "LEARNED_SPELL_IN_TAB") then
-		if (not lazyScript.rangeCheckAction) then
-			local rangeAction = lazyScript.getRangeCheckAction()
-			if lazyScript.spellSearch(rangeAction) then
-				lazyScript.rangeCheckAction = rangeAction
-			end
-		end
-		
+
 		elseif (event == "CHAT_MSG_MONSTER_EMOTE") then
 		lazyScript.OnChatMsgMonsterEmote(arg1,arg2)
 		
@@ -561,6 +569,33 @@ function lazyScript.OnEvent()
 				dromedaryCase and
 				never pluralised
 		]]
+		-------------------------------------------------------------------------------
+		-- range action check after everything else has loaded
+			--[[
+				local rangeAction = lazyScript.getRangeCheckAction() -- parseGeneral.lua
+				if lazyScript.spellSearch(rangeAction) then
+					lazyScript.rangeCheckAction = rangeAction
+				end
+				for formName in pairs(lazyScript.perPlayerConf.forms) do
+			lazyScript.FindParsedForm(formName, false)
+		end
+		
+		if (lazyScript.perPlayerConf.minionIsVisible) then
+			LazyScriptMinionFrame:Show()
+		end
+		
+		if (lazyScript.perPlayerConf.showActionAlways == true and dummy ~= nil) then -- minion setup after actions are loaded
+			lazyScript.minion.OnUpdate()
+		elseif (dummy ~= nil) then
+			lazyScript.minion.SetText(lazyScript.perPlayerConf.defaultForm)
+		else
+			lazyScript.minion.SetText(WELCOME .. lazyScript.metadata.name)
+		end
+		]]
+
+
+
+		-------------------------------------------------------------------------------
 		lazyScript.loadFont()
 	end
 	
@@ -591,6 +626,7 @@ function lazyScript.OnPlayerRegenEnabled()
 			end
 		end
 	end
+
 	lazyScript.lastAttacker = ""
 	lazyScript.numberOfAttackers = 0
 	lazyScript.ganked = nil

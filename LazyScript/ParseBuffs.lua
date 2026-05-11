@@ -247,10 +247,10 @@ function lazyScript.loadBuffTable()
 		sealLight            = lazyScript.Buff:New("sealLight",           "Spell_Holy_HealingAura"                          ),
 		sealRight            = lazyScript.Buff:New("sealRight",           "Ability_ThunderBolt"                             ),
 		sealWisdom           = lazyScript.Buff:New("sealWisdom",          "Spell_Holy_RighteousnessAura"                    ),
-		zeal          			 = lazyScript.Buff:New("zeal",        			  "Spell_Holy_CrusaderStrike"                    ),
+		zeal          		 = lazyScript.Buff:New("zeal",        		  "Spell_Holy_CrusaderStrike"                       ),
 		
 		judgeCrusader        = lazyScript.Buff:New("judgeCrusader",       "Spell_Holy_HolySmite"                            ),
-		judgeJustice         = lazyScript.Buff:New("judgeJustice",        "Spell_Holy_SealOfWrath"                         ),
+		judgeJustice         = lazyScript.Buff:New("judgeJustice",        "Spell_Holy_SealOfWrath"                          ),
 		judgeLight           = lazyScript.Buff:New("judgeLight",          "Spell_Holy_HealingAura"                          ),
 		judgeWisdom          = lazyScript.Buff:New("judgeWisdom",         "Spell_Holy_RighteousnessAura"                    ),
 		

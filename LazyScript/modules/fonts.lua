@@ -1,99 +1,144 @@
---[[
-    additive font config module 
-    overwrites fonts defined in .xmls
-]] 
 local _G = getfenv(0)
 
-local fontFamily = {
-    header = {
-        path = "Interface\\Addons\\LazyScript\\fonts\\PT-Sans-Narrow-Bold.ttf",
-        size = 14,
-        flag = "OUTLINE"
-    },
-    
-    body = {
-        path = "Interface\\Addons\\LazyScript\\fonts\\PT-Sans-Narrow-Bold.ttf",
-        size = 12,
-        flag = nil
-    },
+local ADDON_PATH = "Interface\\Addons\\LazyScript\\fonts\\"
 
-    -- font for editForm code box 
-    code = {
-        path = "Interface\\Addons\\LazyScript\\fonts\\Envy-Code-R.ttf",
-        size = 12,
-        flag = nil
-    }
+local FONT_FILES = {
+    PTSans   = ADDON_PATH .. "PT-Sans-Narrow-Bold.ttf",
+    EnvyCode = ADDON_PATH .. "Envy-Code-R.ttf",
 }
 
-local function applyFont(frame, fontType)
-    if not frame or not frame.SetFont then
-        lazyScript.d("fonts.lua: applyFont: Invalid frame or no SetFont method")
-        return false
-    end
-
-    local font = fontFamily[fontType]
-    
-    if not font then
-        lazyScript.d("fonts.lua: applyFont: no font defined for type: " .. tostring(fontType))
-        return false
-    end
-
-    -- apply font 
-    frame:SetFont(font.path, font.size or 12, font.flag or nil)
-    lazyScript.d("Applied font to frame: " .. tostring(fontType) .. "@" .. font.path)
-    return true
+-- #### font object factory
+local function CreateLSFont(name, base, path, size, flags)
+    local f = CreateFont(name)
+    f:SetFontObject(base)
+    f:SetShadowColor(0, 0, 0, 0)
+    f:SetFont(path, size, flags)
+    return f
 end
 
---[[
-custom font applications
-]]
-function lazyScript.loadFont()
-    -- lazyScript.loadFontFamily()
-    lazyScript.d("Custom fonts loaded.")
-    -- formEdit.xml
+-- --------------------------------------------------------------------
+-- #### font objects
+CreateLSFont(
+    "LS_Font_Header",
+    GameFontHighlightLarge,
+    FONT_FILES.PTSans,
+    14,
+    "OUTLINE"
+)
+
+CreateLSFont(
+    "LS_Font_Body",
+    GameFontHighlightLarge,
+    FONT_FILES.PTSans,
+    12,
+    "THICK"
+)
+
+CreateLSFont(
+    "LS_Font_Code",
+    GameFontHighlightLarge,
+    FONT_FILES.EnvyCode,
+    11,
+    "THICK"
+)
+
+-- --------------------------------------------------------------------
+-- #### font object applier
+local function ApplyFontObject(frame, fontObject)
+    if not frame then return end
+
+    local font = _G[fontObject]
+
+    -- Case 1: FontString
+    if frame.SetFontObject then
+        frame:SetFontObject(font)
+        return
+    end
+
+    -- Case 2: Button / TabButton
+    if frame.SetNormalFontObject then
+        frame:SetNormalFontObject(font)
+        frame:SetHighlightFontObject(font)
+        frame:SetDisabledFontObject(font)
+        return
+    end
+
+    -- Case 3: EditBox
+    if frame.SetFont then
+        local p, s, f = font:GetFont()
+        frame:SetFont(p, s, f)
+    end
 end
 
+-- --------------------------------------------------------------------
+-- #### font mapping 
+local FONT_MAP = {
+    LS_Font_Header = {
+        "LazyScriptFormEditFrameTitle",
+        "LazyScriptFormHelpTitle",
+    },
 
--- edit frame
-applyFont(_G.LazyScriptFormEditFrameTitle, "header")
-applyFont(_G.LazyScriptFormEditFrameFormName, "body")
-applyFont(_G.LazyScriptFormEditFrameFormNameDescr, "body")
-applyFont(_G.LazyScriptFormEditFrameForm, "code")
+    LS_Font_Body = {
+        "LazyScriptFormEditFrameFormName",
+        "LazyScriptFormEditFrameFormNameDescr",
+        "LazyScriptFormEditFrameHelpButton",
+        "LazyScriptFormEditFrameCancelButton",
+        "LazyScriptFormEditFrameOkayButton",
+        "LazyScriptFormEditFrameTestButton",
+        "LazyScriptMinionText",
+        "LazyScriptDeathstimatorText",
+    },
 
-local editFrameButton = {
-    "LazyScriptFormEditFrameHelpButton",
-    "LazyScriptFormEditFrameCancelButton",
-    "LazyScriptFormEditFrameOkayButton",
-    "LazyScriptFormEditFrameTestButton",
+    LS_Font_Code = {
+        "LazyScriptFormEditFrameForm",
+    },
 }
 
-for _, name in ipairs(editFrameButton) do
-    local btn = _G[name]
-    if btn then
-        applyFont(btn,"body")
+-- #### font mapping 
+-- ##### tabs  
+local TAB_PATTERNS = {
+    { "LazyScriptFormHelpTab", 5 },
+    { "LazyScriptAboutFrameTab", 5 },
+}
+
+-- --------------------------------------------------------------------
+-- #### simplehtml font applier
+local function SetupHTMLFonts()
+    local html = _G.LazyScriptFormHelpScrollFrameScrollChildText
+    if not html then return end
+    html:SetShadowColor(0, 0, 0, 0) -- otherwise p inherits a shadow 
+    html:SetFont("H1", FONT_FILES.PTSans,   18, "")
+    html:SetTextColor("H1", 0.58,0.63,0.63)
+    html:SetFont("H2", FONT_FILES.PTSans,   14, "")
+    html:SetTextColor("H2", 0.4,0.48,0.51)
+    html:SetFont("H3", FONT_FILES.EnvyCode, 11, "")
+    html:SetTextColor("H3", 0.71,0.54,0)
+    html:SetFont("P",  FONT_FILES.PTSans,   12, "")
+    html:SetTextColor("P", 0.51,0.58,0.59)
+
+
+end
+
+-- --------------------------------------------------------------------
+-- #### public font init function
+function lazyScript.LoadFonts()
+    -- Apply static mappings
+    for fontObject, frames in pairs(FONT_MAP) do
+        for i = 1, table.getn(frames) do
+            ApplyFontObject(_G[frames[i]], fontObject)
+        end
     end
+
+    -- Apply tab patterns
+    for i = 1, table.getn(TAB_PATTERNS) do
+        local prefix, count = TAB_PATTERNS[i][1], TAB_PATTERNS[i][2]
+        for n = 1, count do
+            ApplyFontObject(_G[prefix .. n], "LS_Font_Body")
+        end
+    end
+
+    SetupHTMLFonts()
 end
-
--- help form
-applyFont(_G.LazyScriptFormHelpTitle, "header")
-applyFont(_G.LazyScriptFormHelpScrollFrameScrollChildText, "body")
-    -- help form subheaders
-
---[[
-    tabs
-]]
-
-for i = 1, 5 do
-    applyFont(_G["LazyScriptFormHelpTab"..i],"body")
-end
-
-for i = 1, 5 do
-    applyFont(_G["LazyScriptAboutFrameTab"..i],"body")
-end
-
---[[
-    minion
-]]
-
-applyFont(_G.LazyScriptMinionText, "body")
-applyFont(_G.LazyScriptDeathstimatorText, "body")
+-- --------------------------------------------------------------------
+-- #### run
+lazyScript.LoadFonts()

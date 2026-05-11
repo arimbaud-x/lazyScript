@@ -46,7 +46,7 @@ function lazyHunterLoad.LoadParseHunter()
 	lazyHunter.actions.scare               = lazyHunter.Action:New("scare",                "Ability_Druid_Cower", nil, nil, true)
 	lazyHunter.actions.scatter             = lazyHunter.Action:New("scatter",              "Ability_GolemStormBolt")
 	lazyHunter.actions.scorpid             = lazyHunter.Action:New("scorpid",              "Ability_Hunter_CriticalShot")
-	lazyHunter.actions.serpent             = lazyHunter.Action:New("serpent",              "Ability_Hunter_Quickshot")
+	lazyHunter.actions.serpent             = lazyHunter.Action:New("serpent",              "Ability_Hunter_Quickshot", nil, nil, true)
 	lazyHunter.actions.tame                = lazyHunter.Action:New("tame",                 "Ability_Hunter_BeastTaming")
 	lazyHunter.actions.trackBeasts         = lazyHunter.Action:New("trackBeasts",          "Ability_Tracking")
 	lazyHunter.actions.trackDemons         = lazyHunter.Action:New("trackDemons",          "Spell_Shadow_SummonFelHunter")
@@ -364,16 +364,23 @@ function lazyHunterLoad.LoadParseHunter()
 	-- "return function() ... end" inside the mask function, everything else will be evaluated at
 	-- the time that the mask is parsed.
 	
-	-- new hunter mask for not clipping autoshot 
-	-- copied from IsSlamTime
-	
+	-- ## new hunter mask for not clipping autoshot 
+	-- ###### copied from IsSlamTime
+				
 	function lazyHunter.masks.IsAutoShotSafe()
-		if Quiver then
-			local _, secondsRemaining =  Quiver.GetSecondsRemainingShoot()
-			return secondsRemaining < 0.01
-		else
-			return true
+		if not Quiver then return true end
+		local _, secondsRemaining =  Quiver.GetSecondsRemainingShoot()
+		
+		if secondsRemaining and secondsRemaining > 0 then
+			lazyScript.d(tostring(secondsRemaining))
+		end 
+		local isReloading, reloadTimer = Quiver.GetSecondsRemainingReload()
+		if reloadTimer and reloadTimer > 0 then
+			lazyScript.d("reloading = "..tostring(reloadTimer))
 		end
+		local minimumSafeTimeInSeconds = 1.5
+		if isReloading and reloadTimer < minimumSafeTimeInSeconds then return false end
+		return secondsRemaining <= 0
 	end
 
 	function lazyHunter.bitParsers.IsAutoShotSafe(bit, actions, masks)
@@ -385,12 +392,52 @@ function lazyHunterLoad.LoadParseHunter()
 		return true 
 	end
 	
-	
+	function lazyHunter.masks.IsReloadTimer(seconds, gtLtEq)
+		return function(sayNothing)
+			if not Quiver then return true end
+			
+			local shooting, _ =  Quiver.GetSecondsRemainingShoot()
+			if shooting then return false end
+			
+			local isReloading, reloadTimer = Quiver.GetSecondsRemainingReload()
+			if not isReloading then return true end
+			
+			local inputTimeInSeconds = tonumber(seconds)
+			if not gtLtEq or gtLtEq== "" then
+				return reloadTimer <= inputTimeInSeconds
+			elseif gtLtEq == ">" then
+				return reloadTimer > inputTimeInSeconds
+			elseif gtLtEq == "=" then
+				return reloadTimer == inputTimeInSeconds
+			else -- if timer<n
+				return reloadTimer < inputTimeInSeconds
+			end
+		end
+	end
+
+	function lazyHunter.bitParsers.IsReloadTimer(bit, actions, masks)
+		-- https://regex101.com/
+		-- ^if(Not)?ReloadTimer([<=>]?)(\d+\.?\d*|\d*\.\d+)s
+		-- ifNotReload<1s
+		--
+		-- 2–5		Not
+		-- 18–19	<
+		-- 19–20	1	where the number can take the form of an integer or decimal float (e.g., 1, or 3.0, or 20.00, or .1)
+		local regex = "^if(Not)?ReloadTimer([<=>]?)(%d+%.?%d*|%d*%.%d+)s"
+		if (not lazyHunter.rebit(bit, regex)) then
+			return false
+		end
+		local negate = lazyHunter.negate1() 
+		local gtLtEq = lazyHunter.match2
+		local seconds = tonumber(lazyHunter.match3)
+		table.insert(masks, lazyHunter.negWrapper(lazyHunter.masks.IsReloadTimer(seconds, gtLtEq), negate))
+		return true 
+	end 
+
 	-- Hunter utility functions
 	---------------------------
 	-- These are functions that are never called by a form but are used within other mask functions.
 	-- Technically, they are not masks, but we'll leave them alone for now.
-	
 	
 	
 	-- Custom AutoAttack
@@ -463,6 +510,18 @@ function lazyHunterLoad.LoadParseHunter()
 		"serpent-ifNotTargetIs=Stung",
 		"arcane"
 	}
+
+	-- this is not implemented into the addon yet todo add this to the addon default to introduce to superwow features
+	lazyHunter.defaultForms.superLazyScript = {
+		[[
+		aimed-ifReloadTimer>1.5s-ifplayerHasBuffTitle=Lock and Load
+		arcane-ifplayerHasDebuffTitle=Enchanted Ammunition-ifAutoShotSafe-ifGotTalent=Experimental Ammunition
+		serpent-ifplayerHasDebuffTitle=Poisonous Ammunition-ifAutoShotSafe
+		multi-ifplayerHasDebuffTitle=Explosive Ammunition-ifAutoShotSafe
+		aimed-ifReloadTimer>2.5s-ifNotInCombat-ifGotTalent=Aimed Shot
+		action=Steady Shot-ifReloadTimer>1.5s
+		]]
+	}
 	
 	-- Custom data
 	---------------
@@ -481,6 +540,8 @@ function lazyHunterLoad.LoadParseHunter()
 		return [[
 			<P>-if[Not]PetMood={happy,content,unhappy}</P>
 			<P>-if[Not]PetProwling</P>
+			<p align="left">-if[Not]AutoShotSafe</p>
+			<p align="left">-if[Not]ReloadTimer={XX.xxs}</p>
 		]]
 	end
 	

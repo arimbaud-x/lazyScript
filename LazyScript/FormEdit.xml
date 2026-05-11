@@ -549,7 +549,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 							<Color r="1" g="1" b="0.6"/>
 						</FontString>
 						<FontStringHeader1>
-							<Font file="Interface\AddOns\LazyScript\fonts\PT-Sans-Narrow-Bold.ttf" height="16" flags="OUTLINE"/>
+							
 							<Color r="1" g="0" b="1"/>
 						</FontStringHeader1> 
 						<FontStringHeader2>
