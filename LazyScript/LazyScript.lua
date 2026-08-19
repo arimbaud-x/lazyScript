@@ -58,7 +58,7 @@ SLASH_LAZYSCRIPT2 = "/ls"
 BINDING_HEADER_LAZYSCRIPT = lazyScript.metadata.name
 
 
-LS_TEXTURE_PREFIX = "Interface\\Addons\\"
+LS_TEXTURE_PREFIX = "Interface\\Icons\\" -- changed from interface\\addons because that shit was wrong bro!!!!!!!!!! ts pmo 🥀
 
 
 lazyScript.addOnIsActive = false

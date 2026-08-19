@@ -4,9 +4,9 @@ if not SUPERWOW_VERSION then
     return
 end
 if SUPERWOW_STRING then
-    lazyScript.p("lazyScript detected "..SUPERWOW_STRING) 
+    lazyScript.p("lazyScript detected |cffaaffaa"..SUPERWOW_STRING) 
 end
-if SUPERWOW_VERSION ~= "1.6" then
+if SUPERWOW_VERSION < "2.2" then
     lazyScript.p("|cffffffaaAn old version of SuperWoW was detected. Please consider updating:")
     lazyScript.p("-> https://github.com/balakethelock/SuperWoW/releases/")
 end
@@ -29,11 +29,12 @@ local SOL_BLUE    = "|cff268bd2"
 local SOL_CYAN    = "|cff2aa198"
 local SOL_GREEN   = "|cff859900"
 local salmon = "|cffff8c69"
+local lsYellow = "|cffffff00"
 local close = "|r"
 
-lazyScript.metadata.name = salmon.."superLazyScript"..close
+lazyScript.metadata.name = salmon.."super"..close..lsYellow.."LazyScript"..close
 lazyScript.metadata.version = "2.0" --v2.0
-lazyScript.metadata.revision = "0"  --r1
+lazyScript.metadata.revision = "1"  --r1
 LOADED = " loaded. All the rope you need...\n...and then a couple more feet, just to be sure.\nType |cffffff00/lazyscript help|r to get a list of commands."
 ABOUT_ALL_ROPE = "... and then a couple more feet, just to be sure."
 
