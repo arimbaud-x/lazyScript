@@ -13,8 +13,9 @@
   >*This feature went undocumented and impractical. Now it's actually big and readable. It's intent is to let you know which script is currently active.*
 - Added a new 'Extras' tab to the help menu, noting down undocumented features.
 
+You can use custom abilities not present in the documentation via using the command `action=<Action Name>`. e.g. `action=Aspect of the Viper-ifPlayer<10%mana`. Similarly, you can reference buffs and debuffs by name via `if<UnitId>Has{Buff,Debuff}Title=<Buff Name>`.
 
-### new masks
+### New masks
 
 `-ifAutoShotSafe` requires [Quiver](https://github.com/SabineWren/Quiver) and is a safe way to cast hunter spells without ever clipping the reload timer.
 https://github.com/user-attachments/assets/207a64f0-74c5-448a-8080-0ddf2a785ba8
