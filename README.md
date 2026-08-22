@@ -8,9 +8,9 @@
 - New look & feel
 - Modern fonts
 - New & improved interrupt mask logic.
--   *Previously, the addon had no way to know the duration of a spellcast, so would have to guess and end up queuing up a kick well after a spell had already been cast. This has been fixed.*
+  >*Previously, the addon had no way to know the duration of a spellcast, so would have to guess and end up queuing up a kick well after a spell had already been cast. This has been fixed.*
 - Fixes and improvements to the `active=echo` command
--   *This feature went undocumented and impractical. Now it's actually big and readable. It's intent is to let you know which script is currently active.*
+  >*This feature went undocumented and impractical. Now it's actually big and readable. It's intent is to let you know which script is currently active.*
 - Added a new 'Extras' tab to the help menu, noting down undocumented features.
 
 
@@ -37,7 +37,7 @@ Look at [Wiki](https://github.com/laytya/LazyScript/wiki) for more info
 
 https://www.fengshen.cn/2024/03/lazyscript%e5%ae%9a%e5%88%b6%e7%89%88%e4%b9%8c%e9%be%9f%e6%9c%8d%e9%80%82%e9%85%8d%e5%86%85%e5%ae%b9/
 
-i think this is some chinese paywalled fork and it has like more nampower and superwow integration but i didnt opt to replace the texture based spell identification with a spellid based one because cba
+i think this is some chinese paywalled fork and it has like more nampower and superwow integration but i didnt opt to replace the texture based spell identification with a spellid based one because cba anyway thought it was interesting also theres some google code original repo from 20 years ago drifting around somewhere but killed by google ofc hard to find it you find it tell me nice to add here lowk
 
 
 
