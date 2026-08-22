@@ -1,10 +1,12 @@
 # superLazyScript
 
-**superLazyScript** is a fork of [lazyScript](https://github.com/laytya/LazyScript), an in-game attack scripting language for Vanilla clients. It is aimed at users who would like to write more complex in-game macros, but who do not want to have to deal with the full blown API or do not want to have to write a separate add-on for every macro over 250 characters. https://turtle-wow.fandom.com/wiki/LazyScript
-**superLazyScript** incorporates [SuperWoW](https://github.com/balakethelock/SuperWoW), [Quiver](https://github.com/SabineWren/Quiver) (for hunters) and [SP_SwingTimer](https://github.com/MarcelineVQ/SP_SwingTimer) to make existing features better, and add new features too. superLazyScript is developed for ~~TurtleWoW~~ OctoWoW.
+**superLazyScript** is a fork of [lazyScript](https://github.com/laytya/LazyScript), an **in-game attack scripting language** for Vanilla clients. It is aimed at users who would like to write more complex in-game macros, but who do not want to have to deal with the full blown API or do not want to have to write a separate add-on for every macro over 250 characters<sup>[[wiki]](https://turtle-wow.fandom.com/wiki/LazyScript)</sup>.
+
+superLazyScript incorporates [SuperWoW](https://github.com/balakethelock/SuperWoW), [Quiver](https://github.com/SabineWren/Quiver) (for hunters) and [SP_SwingTimer](https://github.com/MarcelineVQ/SP_SwingTimer) to make existing features better, and add new features too. superLazyScript is developed for ~~TurtleWoW~~ **OctoWoW**.
 
 <img width="1326" height="725" alt="image" src="https://github.com/user-attachments/assets/c35763b7-d8fc-46c2-81b7-1b573aadb17c" />
 
+## Features
 - New look & feel
 - Modern fonts
 - New & improved interrupt mask logic.
