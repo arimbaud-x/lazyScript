@@ -1,17 +1,23 @@
-# 'superLazyScript'
+# superLazyScript
 
-added new skin, font, and superwow interrupt support (so now player will not try to interrupt a completed cast)
-made active=msg activeframe actually big and readable. changed minion texture to a white glow. added new help tab for previously undocumented features. fixed warrior targethp bug caused by misnamed variable.
-
-changes in modules/
+**superLazyScript** is a fork of [lazyScript](https://github.com/laytya/LazyScript), an in-game attack scripting language for Vanilla clients. It is aimed at users who would like to write more complex in-game macros, but who do not want to have to deal with the full blown API or do not want to have to write a separate add-on for every macro over 250 characters. https://turtle-wow.fandom.com/wiki/LazyScript
+**superLazyScript** incorporates [SuperWoW](https://github.com/balakethelock/SuperWoW), [Quiver](https://github.com/SabineWren/Quiver) (for hunters) and [SP_SwingTimer](https://github.com/MarcelineVQ/SP_SwingTimer) to make existing features better, and add new features too. superLazyScript is developed for ~~TurtleWoW~~ OctoWoW.
 
 <img width="1326" height="725" alt="image" src="https://github.com/user-attachments/assets/c35763b7-d8fc-46c2-81b7-1b573aadb17c" />
 
+- New look & feel
+- Modern fonts
+- New & improved interrupt mask logic.
+-   *Previously, the addon had no way to know the duration of a spellcast, so would have to guess and end up queuing up a kick well after a spell had already been cast. This has been fixed.*
+- Fixes and improvements to the `active=echo` command
+-   *This feature went undocumented and impractical. Now it's actually big and readable. It's intent is to let you know which script is currently active.*
+- Added a new 'Extras' tab to the help menu, noting down undocumented features.
+
+
 ### new masks
 
+`-ifAutoShotSafe` requires [Quiver](https://github.com/SabineWren/Quiver) and is a safe way to cast hunter spells without ever clipping the reload timer.
 https://github.com/user-attachments/assets/207a64f0-74c5-448a-8080-0ddf2a785ba8
-
-ifAutoShotSafe requires Quiver and is a safe way to cast hunter spells without ever clipping the reload timer.
 
 Script used:
 ```
@@ -27,8 +33,11 @@ action=Steady Shot-ifReloadTimer>1.5s
 
 Look at [Wiki](https://github.com/laytya/LazyScript/wiki) for more info
 
+## Wider LazyScript Cinematic Universe:
 
+https://www.fengshen.cn/2024/03/lazyscript%e5%ae%9a%e5%88%b6%e7%89%88%e4%b9%8c%e9%be%9f%e6%9c%8d%e9%80%82%e9%85%8d%e5%86%85%e5%ae%b9/
 
+i think this is some chinese paywalled fork and it has like more nampower and superwow integration but i didnt opt to replace the texture based spell identification with a spellid based one because cba
 
 
 
