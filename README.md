@@ -20,6 +20,7 @@ You can use custom abilities not present in the documentation via using the comm
 ### New masks
 
 `-ifAutoShotSafe` requires [Quiver](https://github.com/SabineWren/Quiver) and is a safe way to cast hunter spells without ever clipping the reload timer.
+
 https://github.com/user-attachments/assets/207a64f0-74c5-448a-8080-0ddf2a785ba8
 
 Script used:
