@@ -1,11 +1,11 @@
 ## Interface: 11200
-## Title: LazyScript
-## Version: 1.0.4
-## X-Revision: $Revision: 800 $
+## Title: |cffff8c69super|cffffffffLazyScript
+## Version: 2.0
+## X-Revision: $Revision: 2 $
 ## X-LazyScriptCompatibility: 3
 ## Notes: Programmable Class Attacks.
 ## Notes-ruRU: Программируемые атаки классов.
-## OptionalDeps: MobInfo-2, Tracer
+## OptionalDeps: SP_SwingTimer, Quiver
 ## SavedVariables: lsConfGlobal
 ## SavedVariablesPerCharacter: lsConf
 

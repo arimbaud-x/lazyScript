@@ -3143,10 +3143,11 @@ function lazyScript.bitParsers.ifTimeToDeath(bit, actions, masks)
 	local gtLtEq = lazyScript.match1
 	local val = tonumber(lazyScript.match2)
 	
-	if (not MobHealth_GetTargetCurHP) then
+	-- arimbaud: removed mobhealth requirement
+	--[[ if (not MobHealth_GetTargetCurHP) then
 		lazyScript.p(TIMETODEATH_CANNOT_ESTIMATED)
 		return nil
-	end
+	end ]]
 	
 	table.insert(masks, lazyScript.masks.HaveTarget)
 	table.insert(masks, lazyScript.masks.TimeToDeath(gtLtEq, val))

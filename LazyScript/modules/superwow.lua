@@ -29,10 +29,10 @@ local SOL_BLUE    = "|cff268bd2"
 local SOL_CYAN    = "|cff2aa198"
 local SOL_GREEN   = "|cff859900"
 local salmon = "|cffff8c69"
-local lsYellow = "|cffffff00"
+local lsColor = "|cffffffff"
 local close = "|r"
 
-lazyScript.metadata.name = salmon.."super"..close..lsYellow.."LazyScript"..close
+lazyScript.metadata.name = salmon.."super"..close..lsColor.."LazyScript"..close
 lazyScript.metadata.version = "2.0" --v2.0
 lazyScript.metadata.revision = "1"  --r1
 LOADED = " loaded. All the rope you need...\n...and then a couple more feet, just to be sure.\nType |cffffff00/lazyscript help|r to get a list of commands."

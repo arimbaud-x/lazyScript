@@ -460,7 +460,7 @@ function lazyScript.formHelp.SetupActions()
 
     actionList = {}
     for actionName, actionObj in pairs(lazyScript.shapeshift) do
-		lazyScript.p("shapeshift iter: " .. tostring(actionName))
+		lazyScript.d("shapeshift iter: " .. tostring(actionName))
         local actionNameText = actionName
         if (actionObj.triggersGlobal == false) then
             actionNameText = "|cff40ff40" .. actionNameText .. "    •" .. "|r"
@@ -706,4 +706,4 @@ if not lazyScript.formHelp.tabHelpText[tabName] then
     lazyScript.formHelp.SetupHelpText()
 end
 
-LazyScriptFormHelp:Show()
+-- LazyScriptFormHelp:Show() -- open help form on load(testing)
