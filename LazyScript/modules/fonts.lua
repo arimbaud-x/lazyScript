@@ -1,13 +1,15 @@
 local _G = getfenv(0)
 
-local ADDON_PATH = "Interface\\Addons\\LazyScript\\fonts\\"
+-- Import theme from themes.lua
+-- ---
+local theme = lazyScript.theme.themes[lazyScript.theme.active]
+local FONT_FILES = theme.fonts
+local SIZES = theme.fontSizes
+local COLORS = theme.textRGB
 
-local FONT_FILES = {
-    PTSans   = ADDON_PATH .. "PT-Sans-Narrow-Bold.ttf",
-    EnvyCode = ADDON_PATH .. "Envy-Code-R.ttf",
-}
-
--- #### font object factory
+-- Font object factory
+-- ---
+-- Creates font object, sets shadow, font and font flags.
 local function CreateLSFont(name, base, path, size, flags)
     local f = CreateFont(name)
     f:SetFontObject(base)
@@ -17,36 +19,18 @@ local function CreateLSFont(name, base, path, size, flags)
 end
 
 -- --------------------------------------------------------------------
--- #### font objects
-CreateLSFont(
-    "LS_Font_Header",
-    GameFontHighlightLarge,
-    FONT_FILES.PTSans,
-    14,
-    "OUTLINE"
-)
-
-CreateLSFont(
-    "LS_Font_Body",
-    GameFontHighlightLarge,
-    FONT_FILES.PTSans,
-    12,
-    "THICK"
-)
-
-CreateLSFont(
-    "LS_Font_Code",
-    GameFontHighlightLarge,
-    FONT_FILES.EnvyCode,
-    11,
-    "THICK"
-)
+-- Font objects
+-- ---
+CreateLSFont("LS_Font_Header", GameFontHighlightLarge, FONT_FILES.PTSans, SIZES.h2, "OUTLINE")
+CreateLSFont("LS_Font_Body",   GameFontHighlightLarge, FONT_FILES.PTSans, SIZES.p,  "THICK")
+CreateLSFont("LS_Font_Code",   GameFontHighlightLarge, FONT_FILES.envyCode, SIZES.h3, "THICK")
 
 -- --------------------------------------------------------------------
--- #### font object applier
+-- Font object applicator
+-- ---
+-- Applies fonts to frames
 local function ApplyFontObject(frame, fontObject)
     if not frame then return end
-
     local font = _G[fontObject]
 
     -- Case 1: FontString
@@ -71,7 +55,8 @@ local function ApplyFontObject(frame, fontObject)
 end
 
 -- --------------------------------------------------------------------
--- #### font mapping 
+-- Font map
+-- ---
 local FONT_MAP = {
     LS_Font_Header = {
         "LazyScriptFormEditFrameTitle",
@@ -94,33 +79,38 @@ local FONT_MAP = {
     },
 }
 
--- #### font mapping 
--- ##### tabs  
+-- #### font mapping
+-- Map font object to tab text
 local TAB_PATTERNS = {
     { "LazyScriptFormHelpTab", 5 },
     { "LazyScriptAboutFrameTab", 5 },
 }
 
 -- --------------------------------------------------------------------
--- #### simplehtml font applier
+-- simplehtml font applicator
+-- ---
 local function SetupHTMLFonts()
     local html = _G.LazyScriptFormHelpScrollFrameScrollChildText
     if not html then return end
     html:SetShadowColor(0, 0, 0, 0) -- otherwise p inherits a shadow 
-    html:SetFont("H1", FONT_FILES.PTSans,   18, "")
-    html:SetTextColor("H1", 0.58,0.63,0.63)
-    html:SetFont("H2", FONT_FILES.PTSans,   14, "")
-    html:SetTextColor("H2", 0.4,0.48,0.51)
-    html:SetFont("H3", FONT_FILES.EnvyCode, 11, "")
-    html:SetTextColor("H3", 0.71,0.54,0)
-    html:SetFont("P",  FONT_FILES.PTSans,   12, "")
-    html:SetTextColor("P", 0.51,0.58,0.59)
 
-
+    -- H1
+    html:SetFont("H1", FONT_FILES.PTSans,   SIZES.h1, "")
+    html:SetTextColor("H1", unpack(COLORS.emphasis))
+    -- H2
+    html:SetFont("H2", FONT_FILES.PTSans,   SIZES.h2, "")
+    html:SetTextColor("H2", unpack(COLORS.secondary))
+    -- H3
+    html:SetFont("H3", FONT_FILES.envyCode, SIZES.h3, "")
+    html:SetTextColor("H3", unpack(COLORS.warning))
+    -- P
+    html:SetFont("P",  FONT_FILES.PTSans,   SIZES.p, "")
+    html:SetTextColor("P",  unpack(COLORS.primary))
 end
 
 -- --------------------------------------------------------------------
--- #### public font init function
+-- Public font init. function
+-- ---
 function lazyScript.LoadFonts()
     -- Apply static mappings
     for fontObject, frames in pairs(FONT_MAP) do
@@ -140,5 +130,6 @@ function lazyScript.LoadFonts()
     SetupHTMLFonts()
 end
 -- --------------------------------------------------------------------
--- #### run
+-- Run
+-- ---
 lazyScript.LoadFonts()

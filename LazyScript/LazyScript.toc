@@ -37,8 +37,10 @@ MinimapMenu.xml
 Minion.xml
 Tooltip.xml
 
+modules\themes.lua
 modules\fonts.lua
 modules\skin.lua
 modules\superwow.lua
 modules\localisation.lua
 modules\help.lua
+modules\init.lua

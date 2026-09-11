@@ -1,146 +1,71 @@
-local solarisedTheme = { -- https://ethanschoonover.com/solarized
-{
-    name = "base03",
-    code = "|cff002b36"
-}, {
-    name = "base02",
-    code = "|cff073642"
-}, {
-    name = "base01",
-    code = "|cff586e75"
-}, {
-    name = "base00",
-    code = "|cff657b83"
-}, {
-    name = "base0",
-    code = "|cff839496"
-}, {
-    name = "base1",
-    code = "|cff93a1a1"
-}, {
-    name = "base2",
-    code = "|cffeee8d5"
-}, {
-    name = "base3",
-    code = "|cfffdf6e3"
-}, {
-    name = "yellow",
-    code = "|cffb58900"
-}, {
-    name = "orange",
-    code = "|cffcb4b16"
-}, {
-    name = "red",
-    code = "|cffdc322f"
-}, {
-    name = "magenta",
-    code = "|cffd33682"
-}, {
-    name = "violet",
-    code = "|cff6c71c4"
-}, {
-    name = "blue",
-    code = "|cff268bd2"
-}, {
-    name = "cyan",
-    code = "|cff2aa198"
-}, {
-    name = "green",
-    code = "|cff859900"
-}, {
-    name = "salmon",
-    code = "|cffff8c69"
-}, {
-	name = "brightgreen",
-	code = "|cff40ff40"
-}}
-
-local fontSizes = {
-    h1 = 18,
-    h2 = 14,
-    h3 = 11,
-    p = 11
-}
-
-local PTSans = "Interface\\Addons\\LazyScript\\fonts\\PT-Sans-Narrow-Bold.ttf"
-local envyCode = "Interface\\Addons\\LazyScript\\fonts\\Envy-Code-R.ttf"
-
-local close = "|r"
-local nl = "\n"
-local br = "<BR/>"
-local h1 = "<H1>"
-local h1c = "</H1>"
-local h2 = "<H2>"
-local h2c = "</H2>"
-local p = "<P>"
-local pc = "</P>"
+local _G = getfenv(0)
 
 local c = {}
-for _, color in ipairs(solarisedTheme) do
-    c[color.name] = color.code -- create ipair of colors 4 use in txt
+local function refreshPalette()
+    for key in pairs (c) do
+        c[key] = nil
+    end
+    local theme = lazyScript.theme.themes[lazyScript.theme.active]
+    if theme and theme.text then
+        for name, code in pairs (theme.text) do
+            c[name] = code
+        end
+    end
 end
+refreshPalette()
+lazyScript.formHelp.refreshPalette = refreshPalette()
 
--- clear help text after all addons have loaded
----------------
+-- Clear help text after all addons have loaded
+-- ---
 local fr = CreateFrame("Frame")
 fr:RegisterEvent("PLAYER_LOGIN")
 fr:SetScript("OnEvent", function()
-	
+
     lazyScript.formHelp.tabHelpText = {}
 end)
 
 --
------
---redirect element
------
+-- ---
 lazyScript.formHelp.Tabs = {
     [1] = "Actions",
     [2] = "Conditions",
     [3] = "Forms",
     [4] = "Settings",
-    [5] = "Extras",
+    [5] = "Extras"
 }
 
-LazyScriptFormHelpScrollFrameScrollChildText:SetScript("OnHyperlinkClick", function()
-    -- arg1 is the link content (e.g., "tab:5")
-    -- arg2 is the full text of the link
-    -- arg3 is the mouse button used
-    lazyScript.formHelp.HandleHyperlink(arg1)
-end)
-LazyScriptFormHelpScrollFrameScrollChildText:SetScript("OnHyperlinkEnter", function(self, link, text, button)
-    SetCursor("Interface/Cursor/Cast")
-end)
-LazyScriptFormHelpScrollFrameScrollChildText:SetScript("OnHyperlinkLeave", function(self)
-    ResetCursor()
-end)
+do
+    LazyScriptFormHelpScrollFrameScrollChildText:SetScript("OnHyperlinkClick", function()
+        -- arg1 is the link content (e.g., "tab:5")
+        -- arg2 is the full text of the link
+        -- arg3 is the mouse button used
+        lazyScript.formHelp.HandleHyperlink(arg1)
+    end)
+    LazyScriptFormHelpScrollFrameScrollChildText:SetScript("OnHyperlinkEnter", function(self, link, text, button)
+        SetCursor("Interface/Cursor/Cast")
+    end)
+    LazyScriptFormHelpScrollFrameScrollChildText:SetScript("OnHyperlinkLeave", function(self)
+        ResetCursor()
+    end)
+end
 
-
+---@diagnostic disable-next-line: duplicate-set-field
 function lazyScript.formHelp.HandleHyperlink(link)
-    if (not link) then return end
-
+    if not link then return end
     -- Check if the link starts with our custom prefix
     if (string.sub(link, 1, 4) == "tab:") then
         local tabIndex = tonumber(string.sub(link, 5))
-		local tabName = lazyScript.formHelp.Tabs[tabIndex]
-        
-        -- Call your existing tab-switching function
-        -- Usually something like PanelTemplates_SetTab or a custom SelectTab
+        -- local tabName = lazyScript.formHelp.Tabs[tabIndex]
+
         lazyScript.formHelp.OnTabButtonClick(tabIndex, Extras)
-		LazyScriptFormHelp.selectedTab = tabIndex
-		PanelTemplates_UpdateTabs(LazyScriptFormHelp)
+        LazyScriptFormHelp.selectedTab = tabIndex
+        PanelTemplates_UpdateTabs(LazyScriptFormHelp)
     end
 end
 
-
-
-
---[[ 
-	commands -> white
-	parameters -> cyan
-	criteria -> base1 gray
-	special markers -> yellow
-	special actions -> green
-]]
+-- Colorize functions
+-- ---
+close = "|r"
 local function Colorize(str)
     local protected = {}
 
@@ -158,10 +83,10 @@ local function Colorize(str)
 
     -- colorise
     str = string.gsub(str, "%[(.-)%]", function(inner)
-        return c.violet .. "[" .. c.red .. inner .. close .. c.violet .. "]" .. close
+        return c.info .. "[" .. c.danger .. inner .. close .. c.info .. "]" .. close
     end)
     str = string.gsub(str, "%{(.-)%}", function(inner)
-        return c.red .. "{" .. c.green .. inner .. close .. c.red .. "}" .. close
+        return c.danger .. "{" .. c.success .. inner .. close .. c.danger .. "}" .. close
     end)
 
     -- restore everything
@@ -172,8 +97,19 @@ local function Colorize(str)
     return str
 end
 
+local h1 = "<H1>"
+local h2 = "<H2>"
+local h2c = "</H2>"
+local h1c = "</H1>"
+local p = "<P>"
+local pc = "</P>"
+local br = "<BR/>"
+-- Setup Tab 1
+-- ---
+---@diagnostic disable-next-line: duplicate-set-field
 function lazyScript.formHelp.SetupOverview()
     local text = "<HTML><BODY>"
+    text = text .. p .. c.bg .. "bg" .. c.bghighlight .. "bghighlight" .. c.primary .. "primary" .. c.secondary .. "secondary" .. c.emphasis .. "emphasis" .. c.success .. "success" .. c.danger .. "danger" .. c.warning .. "warning" .. c.info .. "info" .. c.nogcd .. "nogcd" .. pc .. br
     text = text .. h1 .. TAB_OVERVIEW_1 .. h1c .. "<BR/>" -- 'overview'
     text = text .. p .. TAB_OVERVIEW_2 .. pc .. "<BR/>"
     text = text .. p .. TAB_OVERVIEW_3 .. pc .. "<BR/>"
@@ -276,44 +212,44 @@ function lazyScript.formHelp.SetupExtras()
     text = text .. "<H1>Extra documentation" .. close .. "</H1>" .. br
     text = text .. "<H2>Valid UnitIDs:</H2>"
     text = text .. "<P>The following unit IDs can be used in actions that require a target unit (e.g., action{" ..
-               c.cyan .. "@&lt;UnitId&gt;}" .. c.base00 .. "):</P>"
+               c.info .. "@&lt;UnitId&gt;}" .. c.secondary .. "):</P>"
     local displayUnitIds = {"player", "pet", "party1, party2, party3, party4",
                             "partypet1, partypet2, partypet3, partypet4", "raid[1-40]", "raidpet[1-40]", "target",
                             "targettarget", "mouseover"}
     local unitIdList = {}
     for _, unitId in ipairs(displayUnitIds) do
-        table.insert(unitIdList, c.cyan .. unitId .. close)
+        table.insert(unitIdList, c.info .. unitId .. close)
     end
     text = text .. "<P>" .. table.concat(unitIdList, "</P><P>") .. "</P>"
     text = text .. br .. "<H2>New Features:</H2>"
     text =
-        text .. "<P>" .. c.yellow .. "/ls" .. c.base1 .. "	command for use in macros, e.g., `" .. c.yellow .. "/ls" ..
-            c.green .. " do" .. c.yellow .. " ss" .. c.base1 .. "`</P>"
-    text = text .. "<P>" .. c.orange .. "(smart)" .. c.base1 ..
+        text .. "<P>" .. c.warning .. "/ls" .. c.primary .. "	command for use in macros, e.g., `" .. c.warning .. "/ls" ..
+            c.success .. " do" .. c.warning .. " ss" .. c.primary .. "`</P>"
+    text = text .. "<P>" .. c.warning .. "(smart)" .. c.primary ..
                "	tag; if you are using LazySpell, this tag will replace the rank of spell for Lazyspell calculation, e.g., `" ..
-               c.yellow .. "/ls" .. c.green .. " do " .. c.yellow .. "heal" .. c.orange .. "(smart)" .. c.cyan ..
-               "@mouseover" .. c.base1 .. "`</P>"
-    text = text .. "<P>" .. c.base00 .. "if[Not]" .. c.base00 .. "GotTalent={Talent1,Talent2}" .. c.base1 ..
-               "	critera</P>"
-    text = text .. "<P>" .. c.base1 .. "Support for LUNA, pfUI, NotGrid unitframes in " .. c.cyan .. "mouseover" ..
-               c.base0 .. " actions</P>"
+               c.warning .. "/ls" .. c.success .. " do " .. c.warning .. "heal" .. c.warning .. "(smart)" .. c.info ..
+               "@mouseover" .. c.primary .. "`</P>"
+    text = text .. "<P>" .. c.primary .. "if[Not]" .. c.primary .. "GotTalent={Talent1,Talent2}" .. c.primary ..
+               "	criteria</P>"
+    text = text .. "<P>" .. c.primary .. "Support for LUNA, pfUI, NotGrid unitframes in " .. c.info .. "mouseover" ..
+               c.primary .. " actions</P>"
     text =
-        text .. "<P>" .. c.base00 .. "" .. c.yellow .. "frostNova" .. c.base00 .. " and " .. c.yellow .. "frostbite" ..
-            c.base1 .. "	to known debuffs</P>"
-    text = text .. "<P>" .. c.base00 .. "if[Not]" .. c.base00 .. "PartyHaveClass" .. c.base1 .. "		criteria; e.g., `" ..
-               c.yellow .. "sayInParty" .. c.base00 .. "=" .. c.green .. "No Totem!" .. c.base00 ..
-               "-ifPartyHaveClass=shaman" .. c.base1 .. "`</P>"
-    text = text .. "<P>" .. c.base00 .. "active=message" .. c.base1 ..
+        text .. "<P>" .. c.primary .. "" .. c.emphasis .. "frostNova" .. c.primary .. " and " .. c.emphasis .. "frostbite" ..
+            c.primary .. "	to known debuffs</P>"
+    text = text .. "<P>" .. c.primary .. "if[Not]" .. c.primary .. "PartyHaveClass" .. c.primary .. "		criteria; e.g., `" ..
+               c.warning .. "sayInParty" .. c.primary .. "=" .. c.success .. "No Totem!" .. c.primary ..
+               "-ifPartyHaveClass=shaman" .. c.primary .. "`</P>"
+    text = text .. "<P>" .. c.primary .. "active=message" .. c.primary ..
                "		action; this action will indicate what script is active, e.g., 'active=solo-every2s'. This message will pop-up in a small window for about 1 second.</P>"
-    text = text .. "<P>" .. c.base00 .. "if[Not]" .. c.base00 .. "OnCooldown" .. c.base1 ..
+    text = text .. "<P>" .. c.primary .. "if[Not]" .. c.primary .. "OnCooldown" .. c.primary ..
                ";	added as an alternative for ifInCooldown for grammatic consistency</P>"
-    text = text .. "<P>" .. c.base00 .. "if[Not]" .. c.base00 .. "AutoShotSafe" .. c.base1 ..
-               ";	this mask will try not to clip autoshots [Hunter only] [Quiver Required]" .. c.base1 .. ". " ..
-               c.base01 .. "Mileage may vary according to lag.</P>"
-    text = text .. "<P>" .. c.base00 .. "if[Not]" .. c.base00 .. "SwingSafe" .. c.base1 ..
-               ";		this mask will try not to clip weapon swings [SP_SwingTimer Required]" .. c.base1 .. ".</P>"
-    sayinparty = "nototem!"
+    text = text .. "<P>" .. c.primary .. "if[Not]" .. c.primary .. "AutoShotSafe" .. c.primary ..
+               ";	this mask will try not to clip autoshots [Hunter only] [Quiver Required]" .. c.primary .. ". " ..
+               c.primary .. "Mileage may vary according to lag.</P>"
+    text = text .. "<P>" .. c.primary .. "if[Not]" .. c.primary .. "SwingSafe" .. c.primary ..
+               ";		this mask will try not to clip weapon swings [SP_SwingTimer Required]" .. c.primary .. ".</P>"
     --[[
+                sayinparty = "nototem!"
 	sayInParty=NoTotem-ifPartyHaveClass=shaman
 
 	- Added ifShieldEquipped criteria
@@ -321,11 +257,11 @@ function lazyScript.formHelp.SetupExtras()
 	example active-solo-every2s
 	- Added `Zeal` buff\debuff
 	]]
-    text = text .. "<BR/><H1>" .. c.base01 .. "List of PlaySound Actions</H1><BR/>"
-    text = text .. "<P>" .. c.base00 .. "The playSound action plays a sound file. Syntax:</P>"
+    text = text .. "<BR/><H1>" .. c.secondary .. "List of PlaySound Actions</H1><BR/>"
+    text = text .. "<P>" .. c.secondary .. "The playSound action plays a sound file. Syntax:</P>"
     text = text .. "<P>|cff40ff40playSound|r={soundName}</P><BR/>"
-    text = text .. "<P>" .. c.base00 .. "Valid sound names include " .. c.red ..
-               "(note: some have deliberate typos that work in-game)" .. c.base00 .. ":</P>"
+    text = text .. "<P>" .. c.secondary .. "Valid sound names include " .. c.danger ..
+               "(note: some have deliberate typos that work in-game)" .. c.secondary .. ":</P>"
     local VALID_SOUND_NAMES = {"ACTIONBARBUTTONDOWN", "AUCTIONWINDOWCLOSE", "AUCTIONWINDOWOPEN", "BAGMENUBUTTONPRESS",
                                "Deathbind Sound", "DwarfExploration", "Fishing Reel in", "FriendJoinGame",
                                "GAMEABILITYACTIVATE", "GAMEABILITYBUTTONMOUSEDOWN", "GAMEERRORINVALIDTARGET",
@@ -400,12 +336,18 @@ function lazyScript.formHelp.SetupExtras()
         local displayName = soundName
         -- Highlight known typos with different color
         if soundName == "igSocialOepn" or soundName == "igInventoryOepn" then
-            displayName = "|cffff6060" .. soundName .. "|r" -- Red color for typos
+            displayName = c.danger .. soundName .. "|r" -- Red color for typos
         else
-            displayName = "|cffffffff" .. soundName .. "|r"
+            displayName = c.emphasis .. soundName .. "|r"
         end
+        -- Play button
+        -- local playButton = "|cff40ff40<a href=\"playsound:" .. soundName .. "\">[>]</a>|r"
+        -- table.insert(soundList, playButton .. " " .. displayName)
         table.insert(soundList, displayName)
     end
+
+    -- sound player
+
     text = text .. "<P>" .. table.concat(soundList, "</P><P>") .. "</P>"
     text = text .. "<BR/></BODY></HTML>"
 
@@ -413,26 +355,29 @@ function lazyScript.formHelp.SetupExtras()
 end
 
 TAB_ACTIONS_GREEN_ACTIONS =
-    "<BR/>Actions with a |cff40ff40green pip    •|r do not trigger the global cooldown. LazyScript is able to perform multiple of these actions on a single line provided that the line has at most one action that triggers the global cooldown.<BR/>"
-TAB_ACTIONS_SYNTAX_SPECIFIC_SPELL_RANK_1 = 
-	[[
+    [[<BR/>]] .. c.info .. [[Actions with a ]] .. c.nogcd .. [[green pip    •|r ]]..c.info..[[do not trigger the global
+    cooldown. LazyScript is able to perform multiple of these actions on a single line provided that the line has at
+    most one action that triggers the global cooldown.<BR/>]]
+TAB_ACTIONS_SYNTAX_SPECIFIC_SPELL_RANK_1 = [[
 The &lt;UnitId&gt; can be any valid UnitId sequence as described in the 
-<a href='tab:5'>]]..c.blue..[[Extras|r</a> tab. For example, @player, @pet, 
+<a href='tab:5'>]] .. c.info .. [[Extras|r</a> tab. For example, @player, @pet, 
 @target, @targettarget. Note that the rank of the spell must always 
 appear before the '@' symbol.
 	]]
+-- Setup Tab 2
+-- ---
 function lazyScript.formHelp.SetupActions()
     local text = "<HTML><BODY>"
     text = text .. "<h1>" .. TAB_LIST_ACTIONS .. "</h1>"
     text = text .. "<p>" .. TAB_ACTIONS_SYNTAX_SPECIFIC_SPELL_RANK .. "</p>"
     text = text .. "<P>|cffff770Caction|r[|cffff770C(rankXX)|r][|cffff770C@&lt;UnitId&gt;|r]</P>"
     text = text .. "<p>" .. TAB_ACTIONS_SYNTAX_SPECIFIC_SPELL_RANK_1 .. "</p>"
-    text = text .. "<p>" .. TAB_ACTIONS_GREEN_ACTIONS .. "</p>".."<br/>"
+    text = text .. "<p>" .. TAB_ACTIONS_GREEN_ACTIONS .. "</p>" .. "<br/>"
     local actionList = {}
     for actionName, actionObj in pairs(lazyScript.actions) do
         local actionNameText = actionName
         if (actionObj.triggersGlobal == false) then
-            actionNameText = "|cff40ff40" .. actionNameText .. "    •" .. "|r"
+            actionNameText = c.nogcd .. actionNameText .. "    •" .. "|r"
         end
         table.insert(actionList,
             "|cffffffff" .. (lazyScript.actions[actionName]["name"] or lazyScript.actions[actionName]["code"]) ..
@@ -446,30 +391,30 @@ function lazyScript.formHelp.SetupActions()
     for actionName, actionObj in pairs(lazyScript.comboActions) do
         local actionNameText = actionName
         if (actionObj.triggersGlobal == false) then
-            actionNameText = "|cff40ff40" .. actionNameText .. "    •" .. "|r"
+            actionNameText = c.nogcd .. actionNameText .. "    •" .. "|r"
         end
         table.insert(actionList,
             "|cffffffff" .. (lazyScript.comboActions[actionName]["name"] or lazyScript.comboActions[actionName]["code"]) ..
                 "|r = " .. actionNameText)
     end
     table.sort(actionList)
-    if table.getn(actionList)  then -->= 1
+    if table.getn(actionList) then -- >= 1
         text = text .. h2 .. TAB_ACTIONS_COMBO .. h2c
         text = text .. "<P>" .. table.concat(actionList, "</P><P>") .. "</P><BR/>"
     end
 
     actionList = {}
     for actionName, actionObj in pairs(lazyScript.shapeshift) do
-		lazyScript.d("shapeshift iter: " .. tostring(actionName))
+        lazyScript.d("shapeshift iter: " .. tostring(actionName))
         local actionNameText = actionName
         if (actionObj.triggersGlobal == false) then
-            actionNameText = "|cff40ff40" .. actionNameText .. "    •" .. "|r"
+            actionNameText = c.nogcd .. actionNameText .. "    •" .. "|r"
         end
         table.insert(actionList,
             "|cffffffff" .. (lazyScript.shapeshift[actionName]["name"] or lazyScript.shapeshift[actionName]["code"]) ..
                 "|r = " .. actionNameText)
     end
-	lazyScript.d("shapeshift actionList size: " .. table.getn(actionList))
+    lazyScript.d("shapeshift actionList size: " .. table.getn(actionList))
     table.sort(actionList) --  why is this empty
     if table.getn(actionList) then -- >= 1
         text = text .. h2 .. TAB_ACTIONS_OTHER .. h2c
@@ -480,7 +425,7 @@ function lazyScript.formHelp.SetupActions()
     for actionName, actionObj in pairs(lazyScript.pseudoActions) do
         local actionNameText = actionName
         if (actionObj.triggersGlobal == false) then
-            actionNameText = "|cff40ff40" .. actionNameText .. "    •" .. "|r"
+            actionNameText = c.nogcd .. actionNameText .. "    •" .. "|r"
         end
         table.insert(actionList,
             "|cffffffff" ..
@@ -488,7 +433,7 @@ function lazyScript.formHelp.SetupActions()
                 "|r = " .. actionNameText)
     end
     table.sort(actionList)
-    if table.getn(actionList) then -->= 1 
+    if table.getn(actionList) then -- >= 1 
         text = text .. h2 .. TAB_ACTIONS_SPECIAL .. h2c
         text = text .. "<P>" .. table.concat(actionList, "</P><P>") .. "</P><BR/>"
     end
@@ -498,10 +443,10 @@ function lazyScript.formHelp.SetupActions()
         text = text .. lazyScript.CustomActionHelp()
     end
     text = text .. "<BR/>" .. h2 .. TAB_ACTIONS_PARAMETERS .. h2c
-	text = text .. '<p align="left">'
+    text = text .. '<p align="left">'
     text = text .. TAB_ACTIONS_PARAMETERS_1 .. "<BR/>"
-    text = text .. TAB_ACTIONS_PARAMETERS_2 ..c.brightgreen.. "    •"..close.."<BR/>"
-    text = text .. TAB_ACTIONS_PARAMETERS_3 ..c.brightgreen.. "    •"..close.. "<BR/>"
+    text = text .. TAB_ACTIONS_PARAMETERS_2 .. c.nogcd .. "    •" .. close .. "<BR/>"
+    text = text .. TAB_ACTIONS_PARAMETERS_3 .. c.nogcd .. "    •" .. close .. "<BR/>"
     text = text .. TAB_ACTIONS_PARAMETERS_4 .. "<BR/>"
     text = text .. TAB_ACTIONS_PARAMETERS_5 .. "<BR/>"
     text = text .. TAB_ACTIONS_PARAMETERS_6 .. "<BR/>"
@@ -509,19 +454,19 @@ function lazyScript.formHelp.SetupActions()
     text = text .. TAB_ACTIONS_PARAMETERS_8 .. "<BR/>"
     text = text .. TAB_ACTIONS_PARAMETERS_9 .. "<BR/>"
     text = text .. TAB_ACTIONS_PARAMETERS_10 .. "<BR/>"
-    text = text .. TAB_ACTIONS_PARAMETERS_11 .. c.brightgreen.. "    •"..close.."<BR/>"
-    text = text .. TAB_ACTIONS_PARAMETERS_12 .. c.brightgreen.. "    •"..close.."<BR/>"
-    text = text .. TAB_ACTIONS_PARAMETERS_13 .. c.brightgreen.. "    •"..close.."<BR/>"
-    text = text .. TAB_ACTIONS_PARAMETERS_14 .. c.brightgreen.. "    •"..close.."<BR/>"
-    text = text .. TAB_ACTIONS_PARAMETERS_15 .. c.brightgreen.. "    •"..close.."<BR/>"
-    text = text .. TAB_ACTIONS_PARAMETERS_16 .. c.brightgreen.. "    •"..close.."<BR/>"
-    text = text .. TAB_ACTIONS_PARAMETERS_17 .. c.brightgreen.. "    •"..close.."<BR/>"
-    text = text .. TAB_ACTIONS_PARAMETERS_18 .. c.brightgreen.. "    •"..close.."<BR/>"
-    text = text .. TAB_ACTIONS_PARAMETERS_19 .. c.brightgreen.. "    •"..close.."<BR/>"
-    text = text .. TAB_ACTIONS_PARAMETERS_20 .. c.brightgreen.. "    •"..close.."<BR/>"
-    text = text .. TAB_ACTIONS_PARAMETERS_21 .. c.brightgreen.. "    •"..close.."</p><BR/>"
-    text = text .. h2.. TAB_ACTIONS_PARAMETERS_22 ..h2c
-    text = text .. "<p>"..TAB_ACTIONS_PARAMETERS_23 .. "<BR/>"
+    text = text .. TAB_ACTIONS_PARAMETERS_11 .. c.nogcd .. "    •" .. close .. "<BR/>"
+    text = text .. TAB_ACTIONS_PARAMETERS_12 .. c.nogcd .. "    •" .. close .. "<BR/>"
+    text = text .. TAB_ACTIONS_PARAMETERS_13 .. c.nogcd .. "    •" .. close .. "<BR/>"
+    text = text .. TAB_ACTIONS_PARAMETERS_14 .. c.nogcd .. "    •" .. close .. "<BR/>"
+    text = text .. TAB_ACTIONS_PARAMETERS_15 .. c.nogcd .. "    •" .. close .. "<BR/>"
+    text = text .. TAB_ACTIONS_PARAMETERS_16 .. c.nogcd .. "    •" .. close .. "<BR/>"
+    text = text .. TAB_ACTIONS_PARAMETERS_17 .. c.nogcd .. "    •" .. close .. "<BR/>"
+    text = text .. TAB_ACTIONS_PARAMETERS_18 .. c.nogcd .. "    •" .. close .. "<BR/>"
+    text = text .. TAB_ACTIONS_PARAMETERS_19 .. c.nogcd .. "    •" .. close .. "<BR/>"
+    text = text .. TAB_ACTIONS_PARAMETERS_20 .. c.nogcd .. "    •" .. close .. "<BR/>"
+    text = text .. TAB_ACTIONS_PARAMETERS_21 .. c.nogcd .. "    •" .. close .. "</p><BR/>"
+    text = text .. h2 .. TAB_ACTIONS_PARAMETERS_22 .. h2c
+    text = text .. "<p>" .. TAB_ACTIONS_PARAMETERS_23 .. "<BR/>"
     text = text .. TAB_ACTIONS_PARAMETERS_24 .. "<BR/>"
     text = text .. TAB_ACTIONS_PARAMETERS_25 .. "<BR/>"
     text = text .. TAB_ACTIONS_PARAMETERS_26 .. "</p>"
@@ -531,20 +476,33 @@ function lazyScript.formHelp.SetupActions()
     lazyScript.formHelp.tabHelpText[Actions] = Colorize(text)
 end
 
+-- Setup Tab 3
+-- ---
 function lazyScript.formHelp.SetupCriteria()
     local text = "<HTML><BODY>"
-    text = text .. h1.. TAB_LIST_CRITERIA .. h1c
+    text = text .. h1 .. TAB_LIST_CRITERIA .. h1c
     text = text .. p
-    text = text .. TAB_CRITERIA_1
-    text = text .. TAB_CRITERIA_2 .. "<BR/>"
+    
+        text = text .. TAB_CRITERIA_1 .. br ..br
+    
+    do
+        local TAB_CRITERIA_2 = c.info .. [[• Multiple values within curly braces ({}]].. c.info .. [[) means choose one or more. <BR/>
+         • If more than one is chosen, separate them with commas (e.g. ifRace=Human,Gnome) and the criteria will match if any of
+        the choices match. <BR/>
+         • If a multiple-choice criteria is negated with a "Not" (e.g. ifNotRace=Human,Gnome) then
+        the criteria will match only if none of the choices match. <BR/>
+        Square brackets []]..c.info..[[ mean the value is optional.]].. c.warning ..[[ <BR/>
+         • Do NOT leave the curly braces or square brackets in your form.]]
+        text = text .. TAB_CRITERIA_2 .. "<BR/>"
+    end
     text = text .. pc .. "<br/>"
     -- Only criteria need special help text
-    
+
     if (lazyScript.CustomHelp) then
         text = text .. lazyScript.CustomLocaleHelp()
         text = text .. lazyScript.CustomHelp()
     end
-    
+
     text = text .. "<BR/>" .. h2 .. TAB_CRITERIA_ACTION .. h2c
     text = text .. "<P>-everyXXs</P>"
     text = text .. "<P>-if[Not]{Ctrl,Alt,Shift}Down |cffffff00(" .. TAB_CRITERIA_SEE_NOTE .. " #1)|r</P>"
@@ -585,7 +543,7 @@ function lazyScript.formHelp.SetupCriteria()
     text = text .. h2 .. TAB_CRITERIA_ITEM .. h2c
     text = text .. "<P>-if[Not]ItemCooldown{&lt;,&gt;}XXs={item1,item2,...}</P>"
     text = text .. "<P>-if[Not]ItemInCooldown={item1,item2,...}</P><BR/>"
-    text = text .. h2..TAB_CRITERIA_PLAYER..h2c
+    text = text .. h2 .. TAB_CRITERIA_PLAYER .. h2c
     text = text .. "<P>-if[Not]Dueling</P>"
     text = text .. "<P>-if[Not]Equipped=item</P>"
     text = text .. "<P>-if[Not]Ganked</P>"
@@ -598,14 +556,14 @@ function lazyScript.formHelp.SetupCriteria()
     text = text .. "<P>-if[Not]Tracking={Herbs, Minerals, Treasure}</P>"
     text = text .. "<P>-if[{&lt;,=,&gt;}]XAttackers |cffffff00(" .. TAB_CRITERIA_PVP_ONLY .. ")|r</P>"
     text = text .. "<P>-if[Not]Zone=zonename</P><BR/>"
-    text = text .. h2..TAB_CRITERIA_PET..h2c
+    text = text .. h2 .. TAB_CRITERIA_PET .. h2c
     text = text .. "<P>-if[Not]HasPet</P>"
     text = text .. "<P>-if[Not]PetAlive</P>"
     text = text .. "<P>-if[Not]Pet{Attacking, Following, Staying, Aggressive, Defensive, Passive}</P>"
     text = text ..
                "<P>-if[Not]PetFamily={Bat, Bear, Boar, Carrion Bird, Cat, Crab, Crocolisk, Doomguard, Felhunter, Gorilla, Hyena, Imp, Infernal, Owl, Raptor, Scorpid, Spider, Succubus, Tallstrider, Turtle, Voidwalker, Windserpent, Wolf}</P>"
     text = text .. "<P>-if[Not]PetName=name</P><BR/>"
-    text = text .. h2..TAB_CRITERIA_PARTY_PET_TARGET..h2c
+    text = text .. h2 .. TAB_CRITERIA_PARTY_PET_TARGET .. h2c
     text = text .. "<P>-if[Not]{[Player],Target}{Blocked, Dodged, Parried, Resisted}[{&lt;,&gt;}XX.XXs] |cffffff00(" ..
                TAB_CRITERIA_DEFAULT .. TAB_CRITERIA_SEE_NOTE .. " #11)|r</P>"
     text = text .. "<P>-if[Not]{[Player],Target}FlaggedPVP</P>"
@@ -618,7 +576,7 @@ function lazyScript.formHelp.SetupCriteria()
                "<P>-if[Not]{[Player],Target}Race={Human, Night Elf, Gnome, Dwarf, Orc, Scourge/Undead, Tauren, Troll}</P>"
     text = text ..
                "<P>-if[Not]PartyHaveClass={Druid, Hunder, Mage, Paladin, Priest, Rogue, Shaman, Warlock, Warrior}</P><BR/>"
-    text = text .. h2..TAB_CRITERIA_TARGET..h2c
+    text = text .. h2 .. TAB_CRITERIA_TARGET .. h2c
     text = text .. "<P>-if[Not]CanDebuff</P>"
     text = text .. "<P>-if[Not]HaveTarget</P>"
     text = text .. "<P>-if[Not]TargetAlive</P>"
@@ -691,15 +649,13 @@ function lazyScript.formHelp.SetupBuffsDebuffs()
     lazyScript.formHelp.tabHelpText[Buffs_Debuffs] = Colorize(text)
 end
 
-
-
 function lazyScript.formHelp.SetupHelpText()
     lazyScript.formHelp.SetupOverview()
     lazyScript.formHelp.SetupActions()
     lazyScript.formHelp.SetupCriteria()
     lazyScript.formHelp.SetupBuffsDebuffs()
     lazyScript.formHelp.SetupExtras() -- new
-	
+
 end
 
 if not lazyScript.formHelp.tabHelpText[tabName] then
@@ -707,3 +663,17 @@ if not lazyScript.formHelp.tabHelpText[tabName] then
 end
 
 -- LazyScriptFormHelp:Show() -- open help form on load(testing)
+LazyScriptFormHelpScrollFrameScrollChildText:SetScript("OnHyperlinkClick", function(self, link, text, button)
+    if link and string.sub(link, 1, 10) == "playsound:" then
+        local soundName = string.sub(link, 11)
+
+        -- DEBUG: Check exact string formatting in Chat Frame
+        lazyScript.p("Attempting sound: '" .. tostring(soundName) .. "'")
+
+        -- Try playing as a sound event name:
+        PlaySound(soundName)
+
+        -- Try playing as a file path (fallback):
+        PlaySoundFile(soundName)
+    end
+end)
